@@ -43,7 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Chart.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="GameData.cs" />
+    <Compile Include="Note.cs" />
     <Compile Include="Object.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
