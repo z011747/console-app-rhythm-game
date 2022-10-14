@@ -1,0 +1,7 @@
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\random game.exe.config
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\random game.exe
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\random game.pdb
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Release\random game.csproj.AssemblyReference.cache
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Release\random game.csproj.CoreCompileInputs.cache
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Release\random game.exe
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Release\random game.pdb

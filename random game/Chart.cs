@@ -31,15 +31,23 @@ namespace random_game
                 //read lines
                 while ((s = sr.ReadLine()) != null)
                 {
-                    switch (lineNumber)
+                    switch (s[0])
                     {
-                        case 0: //song name
-
+                        case '#': //song name
+                            s = s.Remove(0,1);
+                            _gameData.songName = s;
                             break;
-                        case 1: //bpm
+                        case '~': //bpm
+                            s = s.Remove(0, 1);
                             float bpm = 100;
                             float.TryParse(s, out bpm);
                             _gameData.bpm = bpm;
+                            break;
+                        case '*': //key count
+                            s = s.Remove(0, 1);
+                            int keyCount = 100;
+                            Int32.TryParse(s, out keyCount);
+                            _gameData.keyCount = keyCount;
                             break;
                         default: //notes
                             ChartNote note = new ChartNote();
@@ -51,7 +59,8 @@ namespace random_game
 
                             //note.time = (note.time * 1000);
 
-                            notes.Add(note);
+                            if (note.lane >= 0)
+                                notes.Add(note);
 
                             break;
                     }

@@ -12,14 +12,8 @@ namespace random_game
         [STAThread] //fix isKeyDown from crashing
         static void Main(string[] args)
         {
-            //Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.CursorVisible = false;
-            Console.Title = "Test Game";
-            //Console.SetBufferSize(1280, 720);
-            //Console.LargestWindowWidth = 1280;
-            //Console.LargestWindowHeight = 720;
-            //Console.SetWindowSize(Console.WindowWidth, Console.WindowHeight);
-
+            Console.Title = "Simple Console App Rhythm Game";
             new Game();
         }
     }

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Windows.Input;
 using System.Media;
+using System.Windows.Media;
 
 namespace random_game
 {
@@ -14,7 +15,7 @@ namespace random_game
     {
         //Stopwatch sw = new Stopwatch();
         List<Object> objects = new List<Object>();
-        private SoundPlayer _soundPlayer;
+        private MediaPlayer _mediaPlayer;
         private GameData _gameData;
         private Chart _chart;
         private Object _displayText;
@@ -24,17 +25,18 @@ namespace random_game
         {
            
             _gameData = new GameData();
-            _soundPlayer = new SoundPlayer();
+            _mediaPlayer = new MediaPlayer();
+            
             _chart = new Chart("testChart", _gameData);
 
 
             _gameData.beatTime = ((60 / _gameData.bpm) * 1000);
 
-            //initSong();
+            initSong();
             initReceptors();
             initNotes();
             setupBinds();
-            _displayText = new Object(100, 5, _gameData);
+            _displayText = new Object(_gameData.receptors[_gameData.keyCount-1].x+10, 5, _gameData);
             objects.Add(_displayText);
 
             DateTime _previousGameTime = DateTime.Now;
@@ -51,22 +53,27 @@ namespace random_game
                 update((float)(GameTime.TotalSeconds));
                 draw();
 
-                Thread.Sleep(16);
+                Thread.Sleep(1);
             }
         }
         public void initNotes()
         {
             for (int i = 0; i < _chart.notes.Count; i++)
             {
-                Note n = new Note(_chart.notes[i].time, _chart.notes[i].lane, _chart.notes[i].sustainLength, _gameData);
-                _gameData.notes.Add(n);
-                objects.Add(n);
+                if (_chart.notes[i].lane < _gameData.keyCount)
+                {
+                    Note n = new Note(_chart.notes[i].time, _chart.notes[i].lane, _chart.notes[i].sustainLength, _gameData);
+                    _gameData.notes.Add(n);
+                    //objects.Add(n);
+                }
             }
-                
+            List<Note> sortedNotes = _gameData.notes.OrderBy(a => a.time).ToList();
+            _gameData.notes = sortedNotes;
+
         }
         public void initReceptors()
         {
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < _gameData.keyCount; i++)
             {
                 Receptor r = new Receptor(i, _gameData);
                 _gameData.receptors.Add(r);
@@ -77,12 +84,17 @@ namespace random_game
         public void initSong()
         {
             
-            _soundPlayer.SoundLocation = System.IO.Directory.GetCurrentDirectory()+"/assets/songs/testSong.wav";
+            Uri audioPath = new Uri(System.IO.Directory.GetCurrentDirectory()+"/assets/songs/"+_gameData.songName.ToLower()+".wav");
             // _soundPlayer.LoadCompleted
             //string thing = System.IO.Directory.GetCurrentDirectory() + "assets/songs/testSong.wav";
-            _soundPlayer.LoadAsync();
-
             
+            _mediaPlayer.Open(audioPath);
+            _mediaPlayer.SpeedRatio = _gameData.songSpeed;
+            _mediaPlayer.Volume = 0;
+            //_mediaPlayer.Position = TimeSpan.Zero;
+
+
+
             //_soundPlayer.Play();
 
 
@@ -109,10 +121,10 @@ namespace random_game
                         
 
                     Note n = _gameData.notes[0];
-                    if (n.time < _gameData.songTime+(_gameData.beatTime*4))
+                    if (n.time < _gameData.songTime+((_gameData.beatTime*4)/_gameData.scrollSpeed))
                     {
-                        
                         _gameData.renderedNotes.Add(n);
+                        objects.Add(n);
                         _gameData.notes.RemoveAt(0);
                     }
                     else
@@ -124,11 +136,9 @@ namespace random_game
 
 
 
+            //if (_mediaPlayer.e)
+                _gameData.songTime += (dt) * 1000* _gameData.songSpeed;
 
-            if (startedSong)
-            {
-                _gameData.songTime += (dt)*1000;
-            }
             for (int i = 0; i < objects.Count; i++)
             {
                 objects[i].update(dt);
@@ -142,7 +152,7 @@ namespace random_game
                     if (_gameData.songTime > n.time && !n.hitNote)
                     {
                         onHitNote(n);
-                        _gameData.receptors[n.lane].autoPlayReset = 0.1f;
+                        _gameData.receptors[n.lane].autoPlayReset = 0.1f + (n.sustainLength*0.001f);
                     }
                 }
             }
@@ -154,7 +164,7 @@ namespace random_game
                 if (_gameData.renderedNotes[noteIdx].shouldRemove)
                 {
                     Note n = _gameData.renderedNotes[noteIdx];
-                    if (!n.hitNote && n.lane < 4)
+                    if (!n.hitNote && n.lane < _gameData.keyCount)
                         notesMissed++;
                     objects.RemoveAt(objects.IndexOf(n));
                     _gameData.renderedNotes.RemoveAt(noteIdx);
@@ -163,19 +173,38 @@ namespace random_game
                 else
                     noteIdx++;
             }
-            //if (!startedSong && _soundPlayer.IsLoadCompleted)
-            //{
-            //    _soundPlayer.Play();
+            if (!startedSong && _gameData.songTime > 0 && _mediaPlayer.Position > TimeSpan.Zero)
+            {
+                
+                _mediaPlayer.Volume = 1;
+                _mediaPlayer.Position = TimeSpan.Zero;
+                //
                 startedSong = true;
-            //}
+                _gameData.songTime = 0;
+            }
 
-            _displayText.text = "Notes Hit: " + notesHit+ "\nNotes Missed: " + notesMissed+"\nNotes Loaded: " + _gameData.renderedNotes.Count;
-
+            _displayText.text = _gameData.songName;
+            if (_gameData.songSpeed != 1.0f)
+                _displayText.text += " (" + _gameData.songSpeed + "x)";
+            _displayText.text += "\n" +"Notes Hit: " + notesHit+ "\nNotes Missed: " + notesMissed+"\nNotes Loaded: " + _gameData.renderedNotes.Count;
+            if (startedSong)
+            {
+                TimeSpan currentTime = TimeSpan.FromMilliseconds(_gameData.songTime);
+                if (currentTime > _mediaPlayer.NaturalDuration.TimeSpan)
+                    currentTime = _mediaPlayer.NaturalDuration.TimeSpan;
+                _displayText.text += "\n"+((float)currentTime.Minutes) + ":" +
+                    (((float)currentTime.Seconds) < 10 ? "0" : "") +
+                    ((float)currentTime.Seconds) + " / "+
+                
+                    ((float)_mediaPlayer.NaturalDuration.TimeSpan.Minutes) + ":" + ((float)_mediaPlayer.NaturalDuration.TimeSpan.Seconds);
+            }
+            if (_gameData.autoPlay)
+                _displayText.text += "\nAUTOPLAY";
         }
         string fillInSpace = "";
         void draw()
         {
-            //
+            
             if (fillInSpace == "")
             {
                 for (int i = 0; i < 30; i++)
@@ -183,6 +212,7 @@ namespace random_game
                     fillInSpace += "                                                                                \n";
                 }
             }
+            Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Black;
             Console.SetCursorPosition(0, 0);
             Console.Write(fillInSpace);
@@ -199,17 +229,20 @@ namespace random_game
 
         private List<Key> Keybinds = new List<Key>();
         private List<bool> KeysHeld = new List<bool>();
+        private List<float> LongNoteTimes = new List<float>();
 
         void setupBinds()
         {
             //fill binds
-            Keybinds.Add(Key.D);
-            Keybinds.Add(Key.F);
-            Keybinds.Add(Key.J);
-            Keybinds.Add(Key.K);
+            for (int i = 0; i < Constants.defaultBinds[_gameData.keyCount-1].Count; i++)
+            {
+                Keybinds.Add(Constants.defaultBinds[_gameData.keyCount - 1][i]);
+            }
+
             for (int i = 0; i < Keybinds.Count; i++)
             {
                 KeysHeld.Add(false);
+                LongNoteTimes.Add(-10000); //do -10000 just in case
             }
         }
 
@@ -253,11 +286,11 @@ namespace random_game
                     
                     if (n.canHitNote && !n.hitNote)
                     {
+                        _gameData.receptors[lane].text = Constants.NOTETEXT;
                         onHitNote(n);
                         break;
                     }
                 }
-                
             }
         }
         void onKeyRelease(int lane)
@@ -265,17 +298,27 @@ namespace random_game
             if (_gameData.checkLane(lane))
             {
                 _gameData.receptors[lane].text = Constants.NOTETEXT;
-                _gameData.receptors[lane].BGColor = ConsoleColor.Black;
+                _gameData.receptors[lane].BGColor = ConsoleColor.DarkGray;
+                _gameData.receptors[lane].FGColor = ConsoleColor.DarkGray;
+                if (_gameData.songTime < LongNoteTimes[lane] && startedSong)
+                {
+                    notesMissed++;
+                }
+                LongNoteTimes[lane] = 0;
             }
         }
 
         void onHitNote(Note n)
         {
             notesHit++;
-            n.shouldRemove = true;
+            if (n.sustainLength == 0) //regular notes
+                n.shouldRemove = true;
+            else
+                LongNoteTimes[n.lane] = n.time + n.sustainLength;
             n.doDraw = false;
             n.hitNote = true;
             _gameData.receptors[n.lane].BGColor = ConsoleColor.White;
+            _gameData.receptors[n.lane].FGColor = ConsoleColor.White;
         }
     }
 }

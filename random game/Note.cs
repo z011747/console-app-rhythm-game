@@ -24,6 +24,8 @@ namespace random_game
             this.lane = lane;
             this.time = time;
             this.sustainLength = sustainLength;
+            BGColor = ConsoleColor.Gray;
+            FGColor = ConsoleColor.Gray;
         }
 
         public override void update(float dt)
@@ -34,8 +36,8 @@ namespace random_game
             //doDraw = false;
 
             canHitNote = false;
-            if (_gameData.songTime < time + _gameData.beatTime &&
-                _gameData.songTime > time - _gameData.beatTime)
+            if (_gameData.songTime < time + Constants.EARLYHITTIMING &&
+                _gameData.songTime > time - Constants.LATEHITTIMING)
             {
                 canHitNote = true;
             }
@@ -46,8 +48,11 @@ namespace random_game
         public override void draw()
         {
             base.draw();
-            if (sustainLength > 0)
+            
+            if (sustainLength > 0) //long note rendering
             {
+                Console.BackgroundColor = BGColor;
+                Console.ForegroundColor = FGColor;
                 string longNote = "";
 
                 float targetY = getTargetY();
@@ -80,9 +85,9 @@ namespace random_game
                 string[] lines = longNote.Split('\n');
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    if (longNoteTop+i > 0 && longNoteTop+i < 30)
+                    if (longNoteTop+i >= 0 && longNoteTop+i < 30)
                     {
-                        Console.SetCursorPosition((int)Math.Round(x + offsetX), (int)Math.Round(longNoteTop) + i);
+                        Console.SetCursorPosition((int)Math.Round(x + offsetX)+2, (int)Math.Round(longNoteTop) + i);
                         Console.Write(lines[i]); //make sure it goes to next line properly
                     }
                 }

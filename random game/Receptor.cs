@@ -18,7 +18,25 @@ namespace random_game
             y = 1;
             if (_gameData.downscroll)
                 y = 25;
+
+            FGColor = ConsoleColor.DarkGray;
+            BGColor = ConsoleColor.DarkGray;
         }
+
+        /*public override void draw()
+        {
+            //base.draw();
+
+            Console.SetCursorPosition((int)Math.Round(x + offsetX)+2, (int)Math.Round(y + offsetY));
+            Console.BackgroundColor = BGColor;
+            Console.Write("###");
+            Console.SetCursorPosition((int)Math.Round(x + offsetX), (int)Math.Round(y + offsetY)+1);
+            Console.Write("#######");
+            Console.SetCursorPosition((int)Math.Round(x + offsetX), (int)Math.Round(y + offsetY) + 2);
+            Console.Write("#######");
+            Console.SetCursorPosition((int)Math.Round(x + offsetX)+2, (int)Math.Round(y + offsetY) + 3);
+            Console.Write("###");
+        }*/
 
         public float autoPlayReset = 0;
         public override void update(float dt)
@@ -31,7 +49,8 @@ namespace random_game
                     autoPlayReset -= dt;
                     if (autoPlayReset < 0)
                     {
-                        BGColor = ConsoleColor.Black;
+                        FGColor = ConsoleColor.DarkGray;
+                        BGColor = ConsoleColor.DarkGray;
                     }
                 }
             }
