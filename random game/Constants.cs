@@ -14,6 +14,12 @@ namespace random_game
             "#######\n" +
             "  ###";
 
+        public const string NOTEPRESSEDTEXT =
+            "  ###\n" +
+            " ##### \n" +
+            " ##### \n" +
+            "  ###";
+
         public const string LONGNOTETEXT =
             "  ###  ";
     }

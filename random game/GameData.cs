@@ -17,12 +17,18 @@ namespace random_game
         public float scrollSpeed { get; }
 
         public List<Note> notes = new List<Note>();
+        public List<Note> renderedNotes = new List<Note>();
         public List<Receptor> receptors = new List<Receptor>();
         public GameData()
         {
             downscroll = true;
             songTime = 0;
             scrollSpeed = 1;
+        }
+
+        public bool checkLane(int lane)
+        {
+            return lane >= 0 && lane < receptors.Count - 1;
         }
     }
 }

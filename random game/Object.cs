@@ -44,7 +44,7 @@ namespace random_game
             string[] lines = text.Split('\n');
             for (int i = 0; i < lines.Length; i++)
             {
-                if (y+offsetY+i > 0 && y + offsetY+i < 40)
+                if (y+offsetY+i > 0 && y + offsetY+i < 30)
                 {
                     Console.SetCursorPosition((int)Math.Round(x + offsetX), (int)Math.Round(y + offsetY) + i);
                     Console.Write(lines[i]); //make sure it goes to next line properly

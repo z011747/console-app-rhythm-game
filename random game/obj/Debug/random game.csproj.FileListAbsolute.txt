@@ -13,3 +13,11 @@ C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Debug\rando
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Debug\random game.csproj.CoreCompileInputs.cache
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Debug\random game.exe
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Debug\random game.pdb
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\random game.exe.config
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\random game.exe
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\random game.pdb
+C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game.csproj.AssemblyReference.cache
+C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game.csproj.SuggestedBindingRedirects.cache
+C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game.csproj.CoreCompileInputs.cache
+C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game.exe
+C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game.pdb

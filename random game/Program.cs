@@ -9,7 +9,7 @@ namespace random_game
 {
     internal class Program
     {
-        
+        [STAThread] //fix isKeyDown from crashing
         static void Main(string[] args)
         {
             //Console.ForegroundColor = ConsoleColor.DarkBlue;
