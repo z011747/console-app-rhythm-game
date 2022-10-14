@@ -99,10 +99,17 @@ namespace random_game
             if (_gameData.notes.Count > 0)
             {
                 bool checkIfNoteNeedsAdding = true;
-                while (checkIfNoteNeedsAdding && _gameData.notes.Count > 0)
+                while (checkIfNoteNeedsAdding)
                 {
+                    if (_gameData.notes.Count <= 0)
+                    {
+                        checkIfNoteNeedsAdding = false;
+                        return;
+                    }
+                        
+
                     Note n = _gameData.notes[0];
-                    if (n.time > _gameData.songTime-(_gameData.beatTime*4))
+                    if (n.time < _gameData.songTime+(_gameData.beatTime*4))
                     {
                         
                         _gameData.renderedNotes.Add(n);
@@ -126,13 +133,28 @@ namespace random_game
             {
                 objects[i].update(dt);
             }
+
+            if (_gameData.autoPlay)
+            {
+                for (int i = 0; i < _gameData.renderedNotes.Count; i++)
+                {
+                    Note n = _gameData.renderedNotes[i];
+                    if (_gameData.songTime > n.time && !n.hitNote)
+                    {
+                        onHitNote(n);
+                        _gameData.receptors[n.lane].autoPlayReset = 0.1f;
+                    }
+                }
+            }
+
+            
             int noteIdx = 0;
             while (noteIdx < _gameData.renderedNotes.Count) //remove notes that need removing
             {
                 if (_gameData.renderedNotes[noteIdx].shouldRemove)
                 {
                     Note n = _gameData.renderedNotes[noteIdx];
-                    if (!n.hitNote)
+                    if (!n.hitNote && n.lane < 4)
                         notesMissed++;
                     objects.RemoveAt(objects.IndexOf(n));
                     _gameData.renderedNotes.RemoveAt(noteIdx);
@@ -147,12 +169,13 @@ namespace random_game
                 startedSong = true;
             //}
 
-            _displayText.text = "Notes Hit: " + notesHit+ "\nNotes Missed: " + notesMissed;
+            _displayText.text = "Notes Hit: " + notesHit+ "\nNotes Missed: " + notesMissed+"\nNotes Loaded: " + _gameData.renderedNotes.Count;
 
         }
         string fillInSpace = "";
         void draw()
         {
+            //
             if (fillInSpace == "")
             {
                 for (int i = 0; i < 30; i++)
@@ -160,6 +183,7 @@ namespace random_game
                     fillInSpace += "                                                                                \n";
                 }
             }
+            Console.BackgroundColor = ConsoleColor.Black;
             Console.SetCursorPosition(0, 0);
             Console.Write(fillInSpace);
             //Console.Clear();
@@ -170,6 +194,7 @@ namespace random_game
                 objects[i].draw();
             }
             Console.SetCursorPosition(0, 0);
+
         }
 
         private List<Key> Keybinds = new List<Key>();
@@ -228,13 +253,11 @@ namespace random_game
                     
                     if (n.canHitNote && !n.hitNote)
                     {
-                        notesHit++;
-                        n.shouldRemove = true;
-                        n.doDraw = false;
-                        n.hitNote = true;
+                        onHitNote(n);
                         break;
                     }
                 }
+                
             }
         }
         void onKeyRelease(int lane)
@@ -242,7 +265,17 @@ namespace random_game
             if (_gameData.checkLane(lane))
             {
                 _gameData.receptors[lane].text = Constants.NOTETEXT;
+                _gameData.receptors[lane].BGColor = ConsoleColor.Black;
             }
+        }
+
+        void onHitNote(Note n)
+        {
+            notesHit++;
+            n.shouldRemove = true;
+            n.doDraw = false;
+            n.hitNote = true;
+            _gameData.receptors[n.lane].BGColor = ConsoleColor.White;
         }
     }
 }

@@ -16,6 +16,8 @@ namespace random_game
         
         public float scrollSpeed { get; }
 
+        public bool autoPlay { get; set; }
+
         public List<Note> notes = new List<Note>();
         public List<Note> renderedNotes = new List<Note>();
         public List<Receptor> receptors = new List<Receptor>();
@@ -23,7 +25,8 @@ namespace random_game
         {
             downscroll = true;
             songTime = 0;
-            scrollSpeed = 1;
+            scrollSpeed = 0.9f;
+            autoPlay = true;
         }
 
         public bool checkLane(int lane)

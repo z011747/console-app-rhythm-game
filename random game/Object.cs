@@ -20,6 +20,8 @@ namespace random_game
 
         public bool doDraw = true;
 
+        public ConsoleColor BGColor = 0;
+
         protected GameData _gameData;
         public Object(float x, float y, GameData _gameData)
         {
@@ -29,6 +31,10 @@ namespace random_game
             offsetX = 0;
             offsetY = 0;
             text = "#";
+
+            
+
+
         }
 
         public virtual void update(float dt)
@@ -40,6 +46,7 @@ namespace random_game
         {
             if (!doDraw)
                 return;
+
             
             string[] lines = text.Split('\n');
             for (int i = 0; i < lines.Length; i++)
@@ -47,6 +54,7 @@ namespace random_game
                 if (y+offsetY+i > 0 && y + offsetY+i < 30)
                 {
                     Console.SetCursorPosition((int)Math.Round(x + offsetX), (int)Math.Round(y + offsetY) + i);
+                    Console.BackgroundColor = BGColor;
                     Console.Write(lines[i]); //make sure it goes to next line properly
                 }
             }

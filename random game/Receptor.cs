@@ -19,5 +19,22 @@ namespace random_game
             if (_gameData.downscroll)
                 y = 25;
         }
+
+        public float autoPlayReset = 0;
+        public override void update(float dt)
+        {
+            base.update(dt);
+            if (_gameData.autoPlay)
+            {
+                if (autoPlayReset > 0)
+                {
+                    autoPlayReset -= dt;
+                    if (autoPlayReset < 0)
+                    {
+                        BGColor = ConsoleColor.Black;
+                    }
+                }
+            }
+        }
     }
 }

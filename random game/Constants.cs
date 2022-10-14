@@ -9,16 +9,16 @@ namespace random_game
     class Constants
     {
         public const string NOTETEXT =
-            "  ###\n" +
+            "  ###  \n" +
             "#######\n" +
             "#######\n" +
-            "  ###";
+            "  ###  ";
 
         public const string NOTEPRESSEDTEXT =
-            "  ###\n" +
+            "  ###  \n" +
             " ##### \n" +
             " ##### \n" +
-            "  ###";
+            "  ###  ";
 
         public const string LONGNOTETEXT =
             "  ###  ";
