@@ -13,5 +13,8 @@ namespace random_game
             "#######\n" +
             "#######\n" +
             "  ###";
+
+        public const string LONGNOTETEXT =
+            "  ###  ";
     }
 }

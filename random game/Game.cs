@@ -12,7 +12,7 @@ namespace random_game
 {
     public class Game
     {
-        Stopwatch sw = new Stopwatch();
+        //Stopwatch sw = new Stopwatch();
         List<Object> objects = new List<Object>();
         private SoundPlayer _soundPlayer;
         private GameData _gameData;
@@ -27,24 +27,44 @@ namespace random_game
             _gameData.beatTime = ((60 / _gameData.bpm) * 1000);
 
             initSong();
+            initReceptors();
             initNotes();
+
+            DateTime _previousGameTime = DateTime.Now;
 
             bool running = true;
             while (running)
             {
                 //update loop
-                sw.Reset();
-                sw.Start();
-                Thread.Sleep(16);
-                sw.Stop();
-                update(sw.ElapsedMilliseconds);
+                TimeSpan GameTime = DateTime.Now - _previousGameTime;
+                _previousGameTime = _previousGameTime + GameTime;
+
+                //sw.Stop();
+                update((float)(GameTime.TotalSeconds));
                 draw();
+
+                Thread.Sleep(8);
             }
         }
         public void initNotes()
         {
             for (int i = 0; i < _chart.notes.Count; i++)
-                objects.Add(new Note(_chart.notes[i].time, _chart.notes[i].lane, _gameData));
+            {
+                Note n = new Note(_chart.notes[i].time, _chart.notes[i].lane, _chart.notes[i].sustainLength, _gameData);
+                _gameData.notes.Add(n);
+                objects.Add(n);
+            }
+                
+        }
+        public void initReceptors()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                Receptor r = new Receptor(i, _gameData);
+                _gameData.receptors.Add(r);
+                objects.Add(r);
+            }
+                
         }
         public void initSong()
         {
@@ -67,23 +87,37 @@ namespace random_game
         {
             timeElapsed += dt;
 
-            if (!startedSong && _soundPlayer.IsLoadCompleted)
-            {
-                _soundPlayer.Play();
-                startedSong = true;
-            }
+
 
 
             if (startedSong)
             {
-                _gameData.songTime += dt*3;
+                _gameData.songTime += (dt)*1000;
             }
             for (int i = 0; i < objects.Count; i++)
             {
                 objects[i].update(dt);
             }
+            int noteIdx = 0;
+            while (noteIdx < _gameData.notes.Count)
+            {
+                if (_gameData.notes[noteIdx].shouldRemove)
+                {
+                    Note n = _gameData.notes[noteIdx];
+                    objects.RemoveAt(objects.IndexOf(n));
+                    _gameData.notes.RemoveAt(noteIdx);
+                    n = null;
+                }
+                else
+                    noteIdx++;
+            }
             //objects[0].y = (float)(5 + (Math.Cos(timeElapsed*0.02) * 3));
             //objects[0].x = (float)(5 + (Math.Sin(timeElapsed * 0.01) * 3));
+            if (!startedSong && _soundPlayer.IsLoadCompleted)
+            {
+                _soundPlayer.Play();
+                startedSong = true;
+            }
 
 
             if (Console.KeyAvailable)
@@ -95,20 +129,21 @@ namespace random_game
                 }
             }
         }
-
+        string fillInSpace = "";
         void draw()
         {
-            //Console.Clear();
-            Console.SetCursorPosition(0, 0);
-            for (int i = 0; i < 30; i++)
+            if (fillInSpace == "")
             {
-                //Console.WriteLine("\n");
-                for (int j = 0; j < 100; j++)
+                for (int i = 0; i < 30; i++)
                 {
-                    Console.SetCursorPosition(j, i);
-                    Console.Write(" ");
+                    fillInSpace += "                                                                                      \n";
                 }
             }
+            Console.SetCursorPosition(0, 0);
+            Console.Write(fillInSpace);
+            //Console.Clear();
+            Console.SetCursorPosition(0, 0);
+
             for (int i = 0; i < objects.Count; i++)
             {
                 objects[i].draw();
