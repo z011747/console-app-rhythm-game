@@ -16,16 +16,17 @@ namespace random_game
 
         public bool hitNote = false;
         public bool canHitNote = false;
+        public bool missedNote = false;
 
         public Note(float time, int lane, float sustainLength, GameData _gameData) : base(0, 0, _gameData)
         {
-            this.x = 2 + (lane * 8);
-            text = Constants.NOTETEXT;
+            this.x = 2 + (lane * _gameData.noteSkinData.spacing);
+            text = _gameData.noteSkinData.noteTexts[lane];
             this.lane = lane;
             this.time = time;
             this.sustainLength = sustainLength;
-            BGColor = ConsoleColor.Gray;
-            FGColor = ConsoleColor.Gray;
+            BGColor = _gameData.noteSkinData.noteColors[lane];
+            FGColor = BGColor;
         }
 
         public override void update(float dt)
@@ -44,6 +45,12 @@ namespace random_game
 
             if (_gameData.songTime > time+_gameData.beatTime+sustainLength)
                 shouldRemove = true;
+
+            if (missedNote)
+            {
+                BGColor = ConsoleColor.DarkGray;
+                FGColor = BGColor;
+            }
         }
         public override void draw()
         {
@@ -51,7 +58,9 @@ namespace random_game
             
             if (sustainLength > 0) //long note rendering
             {
-                Console.BackgroundColor = BGColor;
+                BGColor = _gameData.noteSkinData.noteColors[lane];
+                FGColor = _gameData.noteSkinData.noteColors[lane];
+                Console.BackgroundColor = BGColor; //set colors
                 Console.ForegroundColor = FGColor;
                 string longNote = "";
 
@@ -77,17 +86,19 @@ namespace random_game
 
                 for (int i = (int)Math.Round(longNoteTop); i < longNoteBottom; i++)
                 {
-                    longNote += Constants.LONGNOTETEXT+'\n';
+                    longNote += _gameData.noteSkinData.longNoteTexts[lane] + '\n';
                 }
-                
 
+
+                
 
                 string[] lines = longNote.Split('\n');
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    if (longNoteTop+i >= 0 && longNoteTop+i < 30)
+                    int roundedTop = (int)Math.Round(longNoteTop) + i;
+                    if (roundedTop >= 0 && roundedTop < Constants.BUFFERHEIGHT)
                     {
-                        Console.SetCursorPosition((int)Math.Round(x + offsetX)+2, (int)Math.Round(longNoteTop) + i);
+                        Console.SetCursorPosition((int)Math.Round(x + offsetX)+ _gameData.noteSkinData.longNoteOffset, roundedTop);
                         Console.Write(lines[i]); //make sure it goes to next line properly
                     }
                 }
@@ -100,6 +111,7 @@ namespace random_game
             float scroll = getScrollDirection();
 
             y = targetY - (float)(((_gameData.songTime - time) * _gameData.scrollSpeed * 0.05)*scroll);
+            x = getTargetX();
         }
 
         public float getTargetY()
@@ -107,6 +119,14 @@ namespace random_game
             if (_gameData.checkLane(lane))
             {
                 return _gameData.receptors[lane].y;
+            }
+            return 0;
+        }
+        public float getTargetX()
+        {
+            if (_gameData.checkLane(lane))
+            {
+                return _gameData.receptors[lane].x;
             }
             return 0;
         }

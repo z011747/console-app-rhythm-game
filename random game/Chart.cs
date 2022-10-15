@@ -20,9 +20,9 @@ namespace random_game
     class Chart
     {
         public List<ChartNote> notes = new List<ChartNote>();
-        public Chart(string chartName, GameData _gameData)
+        public Chart(string chartPath, GameData _gameData)
         {
-            string chartPath = System.IO.Directory.GetCurrentDirectory() + "/assets/charts/" + chartName + ".chart"; //load chart
+            //string chartPath = System.IO.Directory.GetCurrentDirectory() + "/assets/charts/" + chartName + ".chart"; //load chart
 
             using (StreamReader sr = File.OpenText(chartPath))
             {
@@ -34,8 +34,8 @@ namespace random_game
                     switch (s[0])
                     {
                         case '#': //song name
-                            s = s.Remove(0,1);
-                            _gameData.songName = s;
+                            //s = s.Remove(0,1);
+                            //_gameData.songName = s;
                             break;
                         case '~': //bpm
                             s = s.Remove(0, 1);

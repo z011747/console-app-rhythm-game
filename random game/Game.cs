@@ -8,28 +8,38 @@ using System.Diagnostics;
 using System.Windows.Input;
 using System.Media;
 using System.Windows.Media;
+using System.IO;
 
 namespace random_game
 {
-    public class Game
-    {
-        //Stopwatch sw = new Stopwatch();
-        List<Object> objects = new List<Object>();
+    class Game : BaseGameClass
+    {        
         private MediaPlayer _mediaPlayer;
         private GameData _gameData;
         private Chart _chart;
         private Object _displayText;
         private int notesHit = 0;
         private int notesMissed = 0;
-        public Game()
+
+        private float accuracy = 0.0f;
+        private int perfects = 0;
+        private int greats = 0;
+        private int oks = 0;
+        private int bads = 0;
+
+
+        public Game() : base()
         {
+            string songName = "Mild Mania Erect";
+            string audioName = getAudioName(songName);
+            string chartName = "mild-mania-erect-6k";
            
-            _gameData = new GameData();
+            _gameData = new GameData(songName, audioName);
+           
             _mediaPlayer = new MediaPlayer();
             
-            _chart = new Chart("testChart", _gameData);
-
-
+            _chart = new Chart(_gameData.getSongPath()+"/"+chartName+".chart", _gameData);
+            _gameData.noteSkinData = new NoteSkinData(_gameData, "funkin");
             _gameData.beatTime = ((60 / _gameData.bpm) * 1000);
 
             initSong();
@@ -39,22 +49,30 @@ namespace random_game
             _displayText = new Object(_gameData.receptors[_gameData.keyCount-1].x+10, 5, _gameData);
             objects.Add(_displayText);
 
-            DateTime _previousGameTime = DateTime.Now;
+            startUpdateLoop(); //run after everything else
+        }
 
-            bool running = true;
-            while (running)
+        string getAudioName(string songName)
+        {
+            string path = System.IO.Directory.GetCurrentDirectory() + "/songs/" + songName + "/info.txt";
+            string audioName = "";
+            using (StreamReader sr = File.OpenText(path))
             {
-                //update loop
-                TimeSpan GameTime = DateTime.Now - _previousGameTime;
-                _previousGameTime = _previousGameTime + GameTime;
+                string s;
+                //read lines
+                while ((s = sr.ReadLine()) != null)
+                {
+                    string[] line = s.Split(':');
 
-                //sw.Stop();
-                input();
-                update((float)(GameTime.TotalSeconds));
-                draw();
-
-                Thread.Sleep(1);
+                    switch (line[0])
+                    {
+                        case "audio":
+                            audioName =  line[1];
+                            break;
+                    }
+                }
             }
+            return audioName;
         }
         public void initNotes()
         {
@@ -84,147 +102,38 @@ namespace random_game
         public void initSong()
         {
             
-            Uri audioPath = new Uri(System.IO.Directory.GetCurrentDirectory()+"/assets/songs/"+_gameData.songName.ToLower()+".wav");
-            // _soundPlayer.LoadCompleted
-            //string thing = System.IO.Directory.GetCurrentDirectory() + "assets/songs/testSong.wav";
-            
+            Uri audioPath = new Uri(_gameData.getAudioFilePath());
             _mediaPlayer.Open(audioPath);
             _mediaPlayer.SpeedRatio = _gameData.songSpeed;
             _mediaPlayer.Volume = 0;
             //_mediaPlayer.Position = TimeSpan.Zero;
-
-
-
-            //_soundPlayer.Play();
-
-
         }
 
 
         float timeElapsed = 0;
         bool startedSong = false;
-        void update(float dt)
+        public override void update(float dt)
         {
             timeElapsed += dt;
+            input(); //run input code
+            CheckIfNotesNeedAdding();
 
-
-            if (_gameData.notes.Count > 0)
-            {
-                bool checkIfNoteNeedsAdding = true;
-                while (checkIfNoteNeedsAdding)
-                {
-                    if (_gameData.notes.Count <= 0)
-                    {
-                        checkIfNoteNeedsAdding = false;
-                        return;
-                    }
-                        
-
-                    Note n = _gameData.notes[0];
-                    if (n.time < _gameData.songTime+((_gameData.beatTime*4)/_gameData.scrollSpeed))
-                    {
-                        _gameData.renderedNotes.Add(n);
-                        objects.Add(n);
-                        _gameData.notes.RemoveAt(0);
-                    }
-                    else
-                    {
-                        checkIfNoteNeedsAdding = false;
-                    }
-                }
-            }
-
-
-
-            //if (_mediaPlayer.e)
-                _gameData.songTime += (dt) * 1000* _gameData.songSpeed;
-
-            for (int i = 0; i < objects.Count; i++)
-            {
-                objects[i].update(dt);
-            }
-
+            _gameData.songTime += (dt) * 1000* _gameData.songSpeed; //increase song time (in milliseconds), seperate from audio time to match for song speed
+            base.update(dt); //update objects/notes
             if (_gameData.autoPlay)
-            {
-                for (int i = 0; i < _gameData.renderedNotes.Count; i++)
-                {
-                    Note n = _gameData.renderedNotes[i];
-                    if (_gameData.songTime > n.time && !n.hitNote)
-                    {
-                        onHitNote(n);
-                        _gameData.receptors[n.lane].autoPlayReset = 0.1f + (n.sustainLength*0.001f);
-                    }
-                }
-            }
+                autoPlayNotes(); //auto hit notes
 
-            
-            int noteIdx = 0;
-            while (noteIdx < _gameData.renderedNotes.Count) //remove notes that need removing
+            CheckIfNotesNeedRemoving(); //remove any notes when needed
+
+            if (!startedSong && _gameData.songTime > 0 && _mediaPlayer.Position > TimeSpan.Zero) //start song
             {
-                if (_gameData.renderedNotes[noteIdx].shouldRemove)
-                {
-                    Note n = _gameData.renderedNotes[noteIdx];
-                    if (!n.hitNote && n.lane < _gameData.keyCount)
-                        notesMissed++;
-                    objects.RemoveAt(objects.IndexOf(n));
-                    _gameData.renderedNotes.RemoveAt(noteIdx);
-                    n = null;
-                }
-                else
-                    noteIdx++;
-            }
-            if (!startedSong && _gameData.songTime > 0 && _mediaPlayer.Position > TimeSpan.Zero)
-            {
-                
                 _mediaPlayer.Volume = 1;
                 _mediaPlayer.Position = TimeSpan.Zero;
-                //
                 startedSong = true;
                 _gameData.songTime = 0;
             }
-
-            _displayText.text = _gameData.songName;
-            if (_gameData.songSpeed != 1.0f)
-                _displayText.text += " (" + _gameData.songSpeed + "x)";
-            _displayText.text += "\n" +"Notes Hit: " + notesHit+ "\nNotes Missed: " + notesMissed+"\nNotes Loaded: " + _gameData.renderedNotes.Count;
-            if (startedSong)
-            {
-                TimeSpan currentTime = TimeSpan.FromMilliseconds(_gameData.songTime);
-                if (currentTime > _mediaPlayer.NaturalDuration.TimeSpan)
-                    currentTime = _mediaPlayer.NaturalDuration.TimeSpan;
-                _displayText.text += "\n"+((float)currentTime.Minutes) + ":" +
-                    (((float)currentTime.Seconds) < 10 ? "0" : "") +
-                    ((float)currentTime.Seconds) + " / "+
-                
-                    ((float)_mediaPlayer.NaturalDuration.TimeSpan.Minutes) + ":" + ((float)_mediaPlayer.NaturalDuration.TimeSpan.Seconds);
-            }
-            if (_gameData.autoPlay)
-                _displayText.text += "\nAUTOPLAY";
-        }
-        string fillInSpace = "";
-        void draw()
-        {
-            
-            if (fillInSpace == "")
-            {
-                for (int i = 0; i < 30; i++)
-                {
-                    fillInSpace += "                                                                                \n";
-                }
-            }
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.SetCursorPosition(0, 0);
-            Console.Write(fillInSpace);
-            //Console.Clear();
-            Console.SetCursorPosition(0, 0);
-
-            for (int i = 0; i < objects.Count; i++)
-            {
-                objects[i].draw();
-            }
-            Console.SetCursorPosition(0, 0);
-
+            updateDisplayText();
+            checkForSongEnd();
         }
 
         private List<Key> Keybinds = new List<Key>();
@@ -274,7 +183,7 @@ namespace random_game
             //notesHit++;
             if (_gameData.checkLane(lane))
             {
-                _gameData.receptors[lane].text = Constants.NOTEPRESSEDTEXT;
+                _gameData.receptors[lane].text = _gameData.noteSkinData.pressedNoteTexts[lane];
             }
             List<Note> sortedNotes = _gameData.renderedNotes.OrderBy(a=>a.time).ToList();
             _gameData.renderedNotes = sortedNotes;
@@ -286,7 +195,7 @@ namespace random_game
                     
                     if (n.canHitNote && !n.hitNote)
                     {
-                        _gameData.receptors[lane].text = Constants.NOTETEXT;
+                        _gameData.receptors[lane].text = _gameData.noteSkinData.noteTexts[lane];
                         onHitNote(n);
                         break;
                     }
@@ -297,12 +206,13 @@ namespace random_game
         {
             if (_gameData.checkLane(lane))
             {
-                _gameData.receptors[lane].text = Constants.NOTETEXT;
-                _gameData.receptors[lane].BGColor = ConsoleColor.DarkGray;
-                _gameData.receptors[lane].FGColor = ConsoleColor.DarkGray;
+                _gameData.receptors[lane].text = _gameData.noteSkinData.noteTexts[lane];
+                _gameData.receptors[lane].BGColor = _gameData.noteSkinData.receptorColors[lane];
+                _gameData.receptors[lane].FGColor = _gameData.receptors[lane].BGColor;
                 if (_gameData.songTime < LongNoteTimes[lane] && startedSong)
                 {
                     notesMissed++;
+                    updateAccuracy();
                 }
                 LongNoteTimes[lane] = 0;
             }
@@ -317,8 +227,161 @@ namespace random_game
                 LongNoteTimes[n.lane] = n.time + n.sustainLength;
             n.doDraw = false;
             n.hitNote = true;
-            _gameData.receptors[n.lane].BGColor = ConsoleColor.White;
-            _gameData.receptors[n.lane].FGColor = ConsoleColor.White;
+            _gameData.receptors[n.lane].BGColor = _gameData.noteSkinData.noteColors[n.lane];
+            _gameData.receptors[n.lane].FGColor = _gameData.receptors[n.lane].BGColor;
+
+            checkNoteRating(n);
         }
+
+
+        void checkNoteRating(Note n)
+        {
+            float msDiff = n.time - _gameData.songTime;
+            int[] timings = { Constants.PERFECTTIMING, Constants.GREATTIMING, Constants.OKTIMING };
+            int ratingID = 3; //bad
+            for (int i = 0; i < timings.Length; i++)
+            {
+                if (Math.Abs(msDiff) < timings[i])
+                {
+                    ratingID = i;
+                    break;
+                }
+            }
+            switch(ratingID)
+            {
+                case 0: //perfect
+                    perfects++;
+                    break;
+                case 1: //great 
+                    greats++;
+                    break;
+                case 2: //ok
+                    oks++;
+                    break;
+                default: //bad
+                    bads++;
+                    break;
+            }
+            updateAccuracy();
+        }
+        void updateAccuracy()
+        {
+            accuracy = (float)((perfects + (greats * 0.75) + (oks * 0.5) + (bads * 0.25)) / (notesHit + notesMissed));
+            accuracy *= 10000;
+            accuracy = (float)Math.Round(accuracy);
+            accuracy = (float)(accuracy * 0.01);
+        }
+
+
+
+
+        void updateDisplayText()
+        {
+            _displayText.text = _gameData.songName;
+            if (_gameData.songSpeed != 1.0f)
+                _displayText.text += " (" + _gameData.songSpeed + "x)"; //speed multiplier display
+            _displayText.text += "\nAccuracy: " + accuracy+"\nPerfect: " +perfects + "\nGreat: " + greats + "\nOk: " + oks + "\nBad: " + bads + "\nMisses: " + notesMissed;
+            if (startedSong)
+            {
+                TimeSpan currentTime = TimeSpan.FromMilliseconds(_gameData.songTime);
+                if (currentTime > _mediaPlayer.NaturalDuration.TimeSpan)
+                    currentTime = _mediaPlayer.NaturalDuration.TimeSpan; //if song time is above max then it should just be max
+
+                _displayText.text += "\n" + ((float)currentTime.Minutes) + ":" + //current minutes
+                    (((float)currentTime.Seconds) < 10 ? "0" : "") + //add a 0 in front to make it look better
+                    ((float)currentTime.Seconds) + " / " + //current seconds
+
+                    ((float)_mediaPlayer.NaturalDuration.TimeSpan.Minutes) + ":" + //total time minutes
+                    (((float)_mediaPlayer.NaturalDuration.TimeSpan.Seconds) < 10 ? "0" : "") +
+                    ((float)_mediaPlayer.NaturalDuration.TimeSpan.Seconds); //total time seconds
+            }
+            if (_gameData.autoPlay)
+                _displayText.text += "\nAUTOPLAY";
+        }
+
+
+
+
+        void CheckIfNotesNeedRemoving()
+        {
+            int noteIdx = 0;
+            while (noteIdx < _gameData.renderedNotes.Count) //remove notes that need removing
+            {
+                if (_gameData.renderedNotes[noteIdx].shouldRemove)
+                {
+                    Note n = _gameData.renderedNotes[noteIdx];
+                    if (!n.hitNote && n.lane < _gameData.keyCount) //stop broken notes from causing misses
+                    {
+                        notesMissed++;
+                        updateAccuracy();
+                    }
+                        
+                    objects.RemoveAt(objects.IndexOf(n));
+                    _gameData.renderedNotes.RemoveAt(noteIdx);
+                    n = null; //no longer needed
+                }
+                else
+                    noteIdx++;
+            }
+        }
+
+
+        void CheckIfNotesNeedAdding()
+        {
+            if (_gameData.notes.Count > 0)
+            {
+                bool checkIfNoteNeedsAdding = true;
+                while (checkIfNoteNeedsAdding)
+                {
+                    if (_gameData.notes.Count <= 0)
+                    {
+                        checkIfNoteNeedsAdding = false;
+                        return;
+                    }
+
+
+                    Note n = _gameData.notes[0];
+                    if (n.time < _gameData.songTime + ((_gameData.beatTime * 4) / _gameData.scrollSpeed))
+                    {
+                        _gameData.renderedNotes.Add(n);
+                        objects.Add(n);
+                        _gameData.notes.RemoveAt(0);
+                    }
+                    else
+                    {
+                        checkIfNoteNeedsAdding = false;
+                    }
+                }
+            }
+        }
+
+
+
+        void autoPlayNotes()
+        {
+            for (int i = 0; i < _gameData.renderedNotes.Count; i++)
+            {
+                Note n = _gameData.renderedNotes[i];
+                if (_gameData.songTime > n.time && !n.hitNote)
+                {
+                    onHitNote(n);
+                    _gameData.receptors[n.lane].autoPlayReset = 0.1f + (n.sustainLength * 0.001f / _gameData.songSpeed);
+                }
+            }
+        }
+
+
+        void checkForSongEnd()
+        {
+            if (startedSong)
+            {
+                if (_gameData.songTime > _mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds + 1000)
+                {
+                    changeRoom(new MainMenu());
+                }
+            }
+
+        }
+
     }
 }

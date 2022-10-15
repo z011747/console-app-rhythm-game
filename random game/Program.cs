@@ -14,7 +14,7 @@ namespace random_game
         {
             Console.CursorVisible = false;
             Console.Title = "Simple Console App Rhythm Game";
-            new Game();
+            new MainMenu();
         }
     }
 }

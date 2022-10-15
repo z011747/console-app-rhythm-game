@@ -11,16 +11,20 @@ namespace random_game
         public int lane { get; }
         public Receptor(int lane, GameData _gameData) : base(0, 0, _gameData)
         {
-            this.x = 2 + (lane * 8);
-            text = Constants.NOTETEXT;
+            this.x = 1 + (lane * _gameData.noteSkinData.spacing);
+            text = _gameData.noteSkinData.noteTexts[lane];
             this.lane = lane;
 
             y = 1;
             if (_gameData.downscroll)
-                y = 25;
+                y = Constants.BUFFERHEIGHT-5;
 
-            FGColor = ConsoleColor.DarkGray;
-            BGColor = ConsoleColor.DarkGray;
+
+
+            x += (float)Math.Floor(Constants.BUFFERWIDTH * 0.5)-(float)(_gameData.noteSkinData.spacing * (_gameData.keyCount+1)*0.5);
+
+            BGColor = _gameData.noteSkinData.receptorColors[lane];
+            FGColor = BGColor;
         }
 
         /*public override void draw()
@@ -49,8 +53,8 @@ namespace random_game
                     autoPlayReset -= dt;
                     if (autoPlayReset < 0)
                     {
-                        FGColor = ConsoleColor.DarkGray;
-                        BGColor = ConsoleColor.DarkGray;
+                        BGColor = _gameData.noteSkinData.receptorColors[lane];
+                        FGColor = BGColor;
                     }
                 }
             }

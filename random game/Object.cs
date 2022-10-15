@@ -32,10 +32,6 @@ namespace random_game
             offsetX = 0;
             offsetY = 0;
             text = "#";
-
-            
-
-
         }
 
         public virtual void update(float dt)
@@ -49,24 +45,48 @@ namespace random_game
                 return;
 
             
-            string[] lines = text.Split('\n');
+            string[] lines = text.Split('\n'); //split for each line
             for (int i = 0; i < lines.Length; i++)
             {
-                if (y+offsetY+i >= 0 && y + offsetY+i < 30)
+                int roundedX = (int)Math.Round(x + offsetX); //get x
+                int roundedY = (int)Math.Round(y + offsetY) + i; //get y pos for line
+                string[] spaceSplit = lines[i].Split(' '); //split for space so the bg stays black on spaces
+                int drawOffset = 0;
+                for (int j = 0; j < spaceSplit.Length; j++)
                 {
-                    int spaceRemoveOffset = 0;
-                    while (lines[i][0] == ' ')
+                    string drawString = spaceSplit[j];
+                    if (roundedY >= 0 && roundedY < Constants.BUFFERHEIGHT) //if within bounds
                     {
-                        lines[i] = lines[i].Remove(0, 1);
-                        spaceRemoveOffset++;
+                                                                    //j = empty space
+                        Console.SetCursorPosition(roundedX+drawOffset+j, roundedY); //set the cursor correctly
+                        Console.BackgroundColor = BGColor; //set colors
+                        Console.ForegroundColor = FGColor;
+                        Console.Write(drawString); //draw the string
                     }
-
-                    Console.SetCursorPosition((int)Math.Round(x + offsetX)+spaceRemoveOffset, (int)Math.Round(y + offsetY) + i);
-                    Console.BackgroundColor = BGColor;
-                    Console.ForegroundColor = FGColor;
-                    Console.Write(lines[i]); //make sure it goes to next line properly
+                    drawOffset += drawString.Length;
                 }
+
+
             }
+        }
+
+
+        public int getWidth()
+        {
+            int highestWidth = 0;
+
+            string[] lines = text.Split('\n'); //split for each line
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].Length > highestWidth)
+                    highestWidth = lines[i].Length;
+            }
+            return highestWidth;
+        }
+        public int getHeight()
+        {
+            string[] lines = text.Split('\n'); //split for each line
+            return lines.Length;
         }
     }
 }
