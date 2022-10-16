@@ -55,6 +55,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameData.cs" />
     <Compile Include="GameSettings.cs" />
+    <Compile Include="LerpedObject.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="Note.cs" />
     <Compile Include="NoteSkinData.cs" />

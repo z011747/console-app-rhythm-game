@@ -114,8 +114,12 @@ namespace random_game
                         obj.text += ": <" + GameSettings.noteQuants + ">";
                         break;
                 }
+                obj.x = 2;
                 if (i == selectedOption)
+                {
                     obj.text += " <-----";
+                    obj.x = 5;
+                }
 
                 if (selectedOption + 10 > Constants.BUFFERHEIGHT)
                 {

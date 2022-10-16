@@ -24,7 +24,8 @@ namespace random_game
         {
             for (int i = 0; i < optionList.Count; i++)
             {
-                Object obj = new Object(2, 5 + i, null);
+                LerpedObject obj = new LerpedObject(2, 5 + i, null);
+                obj.lerpSpeed = 10;
                 obj.text = optionList[i];
                 objects.Add(obj);
                 options.Add(obj);
@@ -88,8 +89,14 @@ namespace random_game
             {
                 Object obj = options[i];
                 obj.text = optionList[i];
+                obj.x = 2;
                 if (i == selectedOption)
-                    obj.text = optionList[i] + " <-----";
+                {
+                    obj.text += " <-----";
+                    obj.x = 5;
+                }
+                
+
 
                 //scroll down
                 if (selectedOption + 10 > Constants.BUFFERHEIGHT)

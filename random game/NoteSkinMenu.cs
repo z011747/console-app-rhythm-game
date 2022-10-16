@@ -47,9 +47,12 @@ namespace random_game
                 obj.text = optionList[i];
                 if (optionList[i] == GameSettings.noteSkin)
                     obj.text += " (Selected)";
+                obj.x = 2;
                 if (i == selectedOption)
+                {
                     obj.text += " <-----";
-
+                    obj.x = 5;
+                }
                 if (selectedOption + 10 > Constants.BUFFERHEIGHT)
                 {
                     obj.y = ((5 + i) - (selectedOption + 10)) + Constants.BUFFERHEIGHT;
