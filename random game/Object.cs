@@ -50,23 +50,28 @@ namespace random_game
             {
                 int roundedX = (int)Math.Round(x + offsetX); //get x
                 int roundedY = (int)Math.Round(y + offsetY) + i; //get y pos for line
-                string[] spaceSplit = lines[i].Split(' '); //split for space so the bg stays black on spaces
+                /*string[] spaceSplit = lines[i].Split(' '); //split for space so the bg stays black on spaces
                 int drawOffset = 0;
                 for (int j = 0; j < spaceSplit.Length; j++)
                 {
                     string drawString = spaceSplit[j];
-                    if (roundedY >= 0 && roundedY < Constants.BUFFERHEIGHT) //if within bounds
-                    {
-                                                                    //j = empty space
-                        Console.SetCursorPosition(roundedX+drawOffset+j, roundedY); //set the cursor correctly
-                        Console.BackgroundColor = BGColor; //set colors
-                        Console.ForegroundColor = FGColor;
-                        Console.Write(drawString); //draw the string
-                    }
+
                     drawOffset += drawString.Length;
+                }*/
+
+                if (roundedY >= 0 && roundedY < Constants.BUFFERHEIGHT) //if within bounds
+                {
+                    int drawOffset = 0;
+                    while (lines[i][0] == ' ')
+                    {
+                        lines[i] = lines[i].Remove(0, 1);
+                        drawOffset++;
+                    }
+                    Console.SetCursorPosition(roundedX+drawOffset, roundedY); //set the cursor correctly
+                    Console.BackgroundColor = BGColor; //set colors
+                    Console.ForegroundColor = FGColor;
+                    Console.Write(lines[i]); //draw the string
                 }
-
-
             }
         }
 

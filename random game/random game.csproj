@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,20 +49,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseGameClass.cs" />
+    <Compile Include="BaseSelectionMenu.cs" />
     <Compile Include="Chart.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameData.cs" />
+    <Compile Include="GameSettings.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="Note.cs" />
     <Compile Include="NoteSkinData.cs" />
+    <Compile Include="NoteSkinMenu.cs" />
     <Compile Include="Object.cs" />
+    <Compile Include="OptionsMenu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Receptor.cs" />
+    <Compile Include="SongSelectionMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

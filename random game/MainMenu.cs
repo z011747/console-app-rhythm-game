@@ -7,22 +7,50 @@ using System.Windows.Input;
 
 namespace random_game
 {
-    class MainMenu : BaseGameClass
+    class MainMenu : BaseSelectionMenu
     {
         Object _text;
+
         public MainMenu() : base()
         {
-            _text = new Object(2, 2, null);
-            _text.text = "press Enter To Start";
+            _text = new Object(2, 1, null);
+            _text.text = "----------------------------------------------------";
+            _text.text += "\nSimple Console App Rhythm Game";
+            _text.text += "\n----------------------------------------------------";
+            
+
+            optionList.Add("Play");
+            optionList.Add("Options");
+            optionList.Add("Note Skins");
+            optionList.Add("Exit");
+
+            setupMenu();
             objects.Add(_text);
             startUpdateLoop();
         }
 
-        public override void update(float dt)
+        public override void onSelect(int selection)
         {
-            base.update(dt);
-            if (Keyboard.IsKeyDown(Key.Enter))
-                changeRoom(new Game());
+            base.onSelect(selection);
+            switch (optionList[selection])
+            {
+                case "Play":
+                    changeRoom(new SongSelectionMenu());
+                    break;
+
+                case "Options":
+                    changeRoom(new OptionsMenu());
+                    break;
+
+                case "Note Skins":
+                    changeRoom(new NoteSkinMenu());
+                    break;
+
+                case "Exit":
+                    running = false;
+                    break;
+            }
+
         }
     }
 }

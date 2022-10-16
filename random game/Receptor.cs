@@ -17,7 +17,7 @@ namespace random_game
 
             y = 1;
             if (_gameData.downscroll)
-                y = Constants.BUFFERHEIGHT-5;
+                y = Constants.BUFFERHEIGHT-getHeight()-1;
 
 
 

@@ -18,6 +18,8 @@ namespace random_game
         private GameData _gameData;
         private Chart _chart;
         private Object _displayText;
+        private Object _FPSDisplay;
+        private Object _ratingDisplay;
         private int notesHit = 0;
         private int notesMissed = 0;
 
@@ -28,19 +30,17 @@ namespace random_game
         private int bads = 0;
 
 
-        public Game() : base()
+        public Game(string songName, string chartName) : base()
         {
-            string songName = "Mild Mania Erect";
             string audioName = getAudioName(songName);
-            string chartName = "mild-mania-erect-6k";
            
             _gameData = new GameData(songName, audioName);
            
             _mediaPlayer = new MediaPlayer();
             
-            _chart = new Chart(_gameData.getSongPath()+"/"+chartName+".chart", _gameData);
-            _gameData.noteSkinData = new NoteSkinData(_gameData, "funkin");
-            _gameData.beatTime = ((60 / _gameData.bpm) * 1000);
+            _chart = new Chart(_gameData.getSongPath()+"/"+chartName, _gameData);
+            _gameData.noteSkinData = new NoteSkinData(_gameData, GameSettings.noteSkin);
+            _gameData.recalculateBeats();
 
             initSong();
             initReceptors();
@@ -48,6 +48,12 @@ namespace random_game
             setupBinds();
             _displayText = new Object(_gameData.receptors[_gameData.keyCount-1].x+10, 5, _gameData);
             objects.Add(_displayText);
+
+            _FPSDisplay = new Object(0,0, _gameData);
+            objects.Add(_FPSDisplay);
+
+            _ratingDisplay = new Object(0, (_gameData.downscroll ? 29 : 0), _gameData);
+            objects.Add(_ratingDisplay);
 
             startUpdateLoop(); //run after everything else
         }
@@ -115,6 +121,7 @@ namespace random_game
         public override void update(float dt)
         {
             timeElapsed += dt;
+            _FPSDisplay.text = (int)(1000/(dt*1000))+" FPS";
             input(); //run input code
             CheckIfNotesNeedAdding();
 
@@ -209,7 +216,7 @@ namespace random_game
                 _gameData.receptors[lane].text = _gameData.noteSkinData.noteTexts[lane];
                 _gameData.receptors[lane].BGColor = _gameData.noteSkinData.receptorColors[lane];
                 _gameData.receptors[lane].FGColor = _gameData.receptors[lane].BGColor;
-                if (_gameData.songTime < LongNoteTimes[lane] && startedSong)
+                if (_gameData.songTime < LongNoteTimes[lane]-Constants.EARLYHITTIMING && startedSong)
                 {
                     notesMissed++;
                     updateAccuracy();
@@ -227,7 +234,7 @@ namespace random_game
                 LongNoteTimes[n.lane] = n.time + n.sustainLength;
             n.doDraw = false;
             n.hitNote = true;
-            _gameData.receptors[n.lane].BGColor = _gameData.noteSkinData.noteColors[n.lane];
+            _gameData.receptors[n.lane].BGColor = n.BGColor;
             _gameData.receptors[n.lane].FGColor = _gameData.receptors[n.lane].BGColor;
 
             checkNoteRating(n);
@@ -251,17 +258,29 @@ namespace random_game
             {
                 case 0: //perfect
                     perfects++;
+                    _ratingDisplay.text = "Perfect";
+                    _ratingDisplay.FGColor = ConsoleColor.Cyan;
                     break;
                 case 1: //great 
                     greats++;
+                    _ratingDisplay.text = "Great";
+                    _ratingDisplay.FGColor = ConsoleColor.Green;
                     break;
                 case 2: //ok
                     oks++;
+                    _ratingDisplay.text = "Ok";
+                    _ratingDisplay.FGColor = ConsoleColor.DarkGreen;
                     break;
                 default: //bad
                     bads++;
+                    _ratingDisplay.text = "Bad";
+                    _ratingDisplay.FGColor = ConsoleColor.DarkRed;
                     break;
             }
+            _ratingDisplay.text += " " + Math.Round(msDiff) + "ms";
+            _ratingDisplay.x = (float)((Constants.BUFFERWIDTH * 0.5) - (_ratingDisplay.getWidth() * 0.5)-(_gameData.noteSkinData.spacing*0.5));
+
+
             updateAccuracy();
         }
         void updateAccuracy()
@@ -280,7 +299,7 @@ namespace random_game
             _displayText.text = _gameData.songName;
             if (_gameData.songSpeed != 1.0f)
                 _displayText.text += " (" + _gameData.songSpeed + "x)"; //speed multiplier display
-            _displayText.text += "\nAccuracy: " + accuracy+"\nPerfect: " +perfects + "\nGreat: " + greats + "\nOk: " + oks + "\nBad: " + bads + "\nMisses: " + notesMissed;
+            _displayText.text += "\nAccuracy: " + accuracy+"%\nPerfect: " +perfects + "\nGreat: " + greats + "\nOk: " + oks + "\nBad: " + bads + "\nMisses: " + notesMissed;
             if (startedSong)
             {
                 TimeSpan currentTime = TimeSpan.FromMilliseconds(_gameData.songTime);

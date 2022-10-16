@@ -57,11 +57,11 @@ namespace random_game
                                     Int32.TryParse(data[1], out lnoff);
                                     longNoteOffset = lnoff;
                                     break;
-                                case "noteQuants":
+                                /*case "noteQuants":
                                     Int32 quants = 0;
                                     Int32.TryParse(data[1], out quants);
                                     noteQuants = quants == 1;
-                                    break;
+                                    break;*/
                             }
                         }
                     }
@@ -161,6 +161,30 @@ namespace random_game
                     break;
             }
             return color;
+        }
+
+        //https://step-mania.fandom.com/wiki/Notes //most colors come from here
+        int[] beats = { 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192 };
+        //tried my best to match
+        ConsoleColor[] beatColor = { ConsoleColor.Red, ConsoleColor.Blue, ConsoleColor.Magenta, ConsoleColor.Green, ConsoleColor.DarkMagenta, 
+            ConsoleColor.DarkRed, ConsoleColor.Cyan, ConsoleColor.DarkGreen, ConsoleColor.White, ConsoleColor.Cyan, ConsoleColor.DarkGreen };
+
+        public ConsoleColor getNoteQuantColor(Note n)
+        {
+            double noteBeat = Math.Floor(((n.time / (_gameData.beatTime)) * 48) + 0.5);
+            ConsoleColor noteCol = ConsoleColor.DarkGray;
+            for (int i = 0; i < beats.Length; i++)
+            {
+                if (noteBeat % (192 / beats[i]) == 0)
+                {
+                    noteBeat = beats[i];
+                    noteCol = beatColor[i];
+                    break;
+                }
+            }
+
+
+            return noteCol;
         }
     }
 }

@@ -9,6 +9,7 @@ namespace random_game
 {
     class Constants
     {
+        /*
         public const string NOTETEXT =
             "  ###\n" +
             "#######\n" +
@@ -26,14 +27,15 @@ namespace random_game
 
         public const int NOTEWIDTH = 8;
         public const int LNOFFSET = 2;
+        */
 
 
         public const int EARLYHITTIMING = 150;
         public const int LATEHITTIMING = 150;
-        public const int PERFECTTIMING = 35;
+        public const int PERFECTTIMING = 30;
         public const int GREATTIMING = 60;
         public const int OKTIMING = 100;
-        //another other timing is bad
+        //any other timing is bad
 
         public static List<List<Key>> defaultBinds = new List<List<Key>>
         {
@@ -50,6 +52,9 @@ namespace random_game
 
         public const int BUFFERWIDTH = 120;
         public const int BUFFERHEIGHT = 30;
-        
+
+        //basic lerp function that idk where else to put
+        public static float lerp(float num1, float num2, float ratio) { return num1 + ratio* (num2 - num1);}
+
     }
 }

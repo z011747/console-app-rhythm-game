@@ -11,12 +11,13 @@ namespace random_game
     {
         public List<Object> objects = new List<Object>();
         public bool running = true;
+        //public bool drawing = true;
         public BaseGameClass()
         {
         }
         public void startUpdateLoop()
         {
-            startDrawThread();
+            //startDrawThread();
             DateTime _previousGameTime = DateTime.Now;
 
             while (running)
@@ -28,24 +29,31 @@ namespace random_game
                 //sw.Stop();
                 //input();
                 update((float)(GameTime.TotalSeconds));
-                //draw();
-
-                Thread.Sleep(4);
-            }
-        }
-        public void startDrawThread()
-        {
-            Thread drawThread = new Thread(drawing);
-            drawThread.Start();
-        }
-        public void drawing()
-        {
-            while (running)
-            {
                 draw();
+
                 Thread.Sleep(1);
             }
         }
+        /*public void startDrawThread()
+        {
+            Thread drawThread = new Thread(drawingOnThread);
+            drawThread.Start();
+        }
+        public void drawingOnThread()
+        {
+            while (drawing)
+            {
+                if (drawing)
+                {
+                    draw();
+                    Thread.Sleep(1);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }*/
         public virtual void update(float dt)
         {
             for (int i = 0; i < objects.Count; i++)
@@ -64,7 +72,7 @@ namespace random_game
                 for (int i = 0; i < Constants.BUFFERHEIGHT; i++)
                 {
 
-                    fillInSpace += "                                                                                                              \n";
+                    fillInSpace += "                                                                                                                       \n";
                 }
             }
             Console.ForegroundColor = ConsoleColor.White;
@@ -82,8 +90,11 @@ namespace random_game
         }
 
 
+
+
         public void changeRoom(BaseGameClass room)
         {
+            //drawing = false;
             running = false;
             //drawThread.Abort();
             //drawThread = null;

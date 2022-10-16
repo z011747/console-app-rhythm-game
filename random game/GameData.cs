@@ -10,20 +10,16 @@ namespace random_game
     class GameData
     {
         public float songTime { get; set; }
-        public bool downscroll { get; private set; }
-
-
-        
+        public bool downscroll { get; private set; }        
         public float scrollSpeed { get; private set; }
 
         public bool autoPlay { get; private set; }
         public int keyCount { get; set; }
         public string songName { get; private set; }
         public float bpm { get; set; }
-        public float beatTime { get; set; }
+        public float beatTime { get; private set; }
 
         public float songSpeed { get; private set; }
-
         private string audioName;
 
         public NoteSkinData noteSkinData { get; set; }
@@ -35,13 +31,20 @@ namespace random_game
         {
             this.songName = songName;
             this.audioName = audioName;
-            downscroll = true;
-            songSpeed = 1.2f;
+            downscroll = GameSettings.downscroll;
+            songSpeed = 1.0f;
             songTime = -1000*Math.Abs(songSpeed); //1 sec before song start
             keyCount = 4;
-            scrollSpeed = 1.2f/songSpeed;
-
-            autoPlay = true;
+            scrollSpeed = GameSettings.scrollSpeed/songSpeed;
+            autoPlay = GameSettings.autoPlay;
+        }
+        public void recalculateBeats()
+        {
+           beatTime = ((60 / bpm) * 1000); //bpm is from the chart so need to do after loading chart
+        }
+        public void changeScrollSpeed(float newSpeed)
+        {
+            scrollSpeed = newSpeed;
         }
 
         public bool checkLane(int lane)

@@ -18,15 +18,22 @@ namespace random_game
         public bool canHitNote = false;
         public bool missedNote = false;
 
+
+
         public Note(float time, int lane, float sustainLength, GameData _gameData) : base(0, 0, _gameData)
         {
-            this.x = 2 + (lane * _gameData.noteSkinData.spacing);
+            this.x = 2 + (lane * _gameData.noteSkinData.spacing); 
             text = _gameData.noteSkinData.noteTexts[lane];
             this.lane = lane;
             this.time = time;
             this.sustainLength = sustainLength;
+
+            //get noteskin color
             BGColor = _gameData.noteSkinData.noteColors[lane];
+            if (GameSettings.noteQuants)
+                BGColor = _gameData.noteSkinData.getNoteQuantColor(this);
             FGColor = BGColor;
+
         }
 
         public override void update(float dt)
@@ -58,8 +65,8 @@ namespace random_game
             
             if (sustainLength > 0) //long note rendering
             {
-                BGColor = _gameData.noteSkinData.noteColors[lane];
-                FGColor = _gameData.noteSkinData.noteColors[lane];
+                //BGColor = _gameData.noteSkinData.noteColors[lane];
+                //FGColor = _gameData.noteSkinData.noteColors[lane];
                 Console.BackgroundColor = BGColor; //set colors
                 Console.ForegroundColor = FGColor;
                 string longNote = "";
@@ -70,27 +77,29 @@ namespace random_game
                 float longNoteTop = y;
                 float longNoteBottom = y;
 
-                if (_gameData.downscroll)
+                int offsetToCenter = (int)Math.Round(getHeight()*0.5); //go into the center of the note
+
+                if (_gameData.downscroll) //on downscroll, top is the end of the long note, bottom is the start of the long note, its the otherway around on upscroll
                 {
                     longNoteTop = targetY - (float)(((_gameData.songTime - (time+sustainLength)) * _gameData.scrollSpeed * 0.05) * scroll);
-                    if (longNoteBottom > targetY)
-                        longNoteBottom = targetY;
+                    longNoteBottom += offsetToCenter;
+                    if (longNoteBottom > targetY+ offsetToCenter) //clip to receptor
+                        longNoteBottom = targetY+ offsetToCenter;
                 }
                 else
                 {
                     longNoteBottom = targetY - (float)(((_gameData.songTime - (time + sustainLength)) * _gameData.scrollSpeed * 0.05) * scroll);
-                    longNoteTop += 4;
-                    if (longNoteTop < targetY+4)
-                        longNoteTop = targetY+4;
+                    longNoteTop += offsetToCenter;
+                    if (longNoteTop < targetY+ offsetToCenter) //clip to receptor
+                        longNoteTop = targetY+ offsetToCenter;
+
+                    
                 }
 
                 for (int i = (int)Math.Round(longNoteTop); i < longNoteBottom; i++)
                 {
                     longNote += _gameData.noteSkinData.longNoteTexts[lane] + '\n';
                 }
-
-
-                
 
                 string[] lines = longNote.Split('\n');
                 for (int i = 0; i < lines.Length; i++)

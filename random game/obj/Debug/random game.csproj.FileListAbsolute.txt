@@ -21,3 +21,5 @@ C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game
 C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game.csproj.CoreCompileInputs.cache
 C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game.exe
 C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game.pdb
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Debug\Newtonsoft.Json.dll
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Debug\Newtonsoft.Json.xml
