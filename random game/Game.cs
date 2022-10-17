@@ -15,7 +15,7 @@ namespace random_game
     class Game : BaseGameClass
     {        
         private MediaPlayer _mediaPlayer;
-        private GameData _gameData;
+        public GameData _gameData;
         private Chart _chart;
         private Object _displayText;
         private Object _FPSDisplay;
@@ -23,17 +23,26 @@ namespace random_game
         private int notesHit = 0;
         private int notesMissed = 0;
 
+        private int combo = 0;
         private float accuracy = 0.0f;
         private int perfects = 0;
         private int greats = 0;
         private int oks = 0;
         private int bads = 0;
 
+        public bool paused = false;
 
+        public static Game instance; //i know these arent great but i need it for lua
+
+        private string chartName;
         public Game(string songName, string chartName) : base()
         {
+            instance = this;
+
             string audioName = getAudioName(songName);
-           
+            this.chartName = chartName; //need song restarts
+
+
             _gameData = new GameData(songName, audioName);
            
             _mediaPlayer = new MediaPlayer();
@@ -41,6 +50,8 @@ namespace random_game
             _chart = new Chart(_gameData.getSongPath()+"/"+chartName, _gameData);
             _gameData.noteSkinData = new NoteSkinData(_gameData, GameSettings.noteSkin);
             _gameData.recalculateBeats();
+            _gameData.script = new LuaScript(_gameData.getSongPath() + "/script.lua", _gameData);
+
 
             initSong();
             initReceptors();
@@ -122,25 +133,30 @@ namespace random_game
         {
             timeElapsed += dt;
             _FPSDisplay.text = (int)(1000/(dt*1000))+" FPS";
-            input(); //run input code
-            CheckIfNotesNeedAdding();
-
-            _gameData.songTime += (dt) * 1000* _gameData.songSpeed; //increase song time (in milliseconds), seperate from audio time to match for song speed
-            base.update(dt); //update objects/notes
-            if (_gameData.autoPlay)
-                autoPlayNotes(); //auto hit notes
-
-            CheckIfNotesNeedRemoving(); //remove any notes when needed
-
-            if (!startedSong && _gameData.songTime > 0 && _mediaPlayer.Position > TimeSpan.Zero) //start song
+            if (!paused)
             {
-                _mediaPlayer.Volume = 1;
-                _mediaPlayer.Position = TimeSpan.Zero;
-                startedSong = true;
-                _gameData.songTime = 0;
+                input(); //run input code
+                CheckIfNotesNeedAdding();
+                //_gameData.script.update(dt);
+
+                _gameData.songTime += (dt) * 1000 * _gameData.songSpeed; //increase song time (in milliseconds), seperate from audio time to match for song speed
+                base.update(dt); //update objects/notes
+                if (_gameData.autoPlay)
+                    autoPlayNotes(); //auto hit notes
+
+                CheckIfNotesNeedRemoving(); //remove any notes when needed
+
+                if (!startedSong && _gameData.songTime > 0 && _mediaPlayer.Position > TimeSpan.Zero) //start song
+                {
+                    _mediaPlayer.Volume = 1;
+                    _mediaPlayer.Position = TimeSpan.Zero;
+                    startedSong = true;
+                    _gameData.songTime = 0;
+                }
+                updateDisplayText();
+                checkForSongEnd();
             }
-            updateDisplayText();
-            checkForSongEnd();
+            
         }
 
         private List<Key> Keybinds = new List<Key>();
@@ -183,6 +199,11 @@ namespace random_game
                 else if (!KeysHeld[i] && checkRelease)
                     onKeyRelease(i);
             }
+
+            if (Keyboard.IsKeyDown(Key.Escape))
+            {
+                pause();
+            }
         }
 
         void onKeyPress(int lane)
@@ -219,6 +240,7 @@ namespace random_game
                 if (_gameData.songTime < LongNoteTimes[lane]-Constants.EARLYHITTIMING && startedSong)
                 {
                     notesMissed++;
+                    combo = 0;
                     updateAccuracy();
                 }
                 LongNoteTimes[lane] = 0;
@@ -228,6 +250,7 @@ namespace random_game
         void onHitNote(Note n)
         {
             notesHit++;
+            combo++;
             if (n.sustainLength == 0) //regular notes
                 n.shouldRemove = true;
             else
@@ -277,7 +300,7 @@ namespace random_game
                     _ratingDisplay.FGColor = ConsoleColor.DarkRed;
                     break;
             }
-            _ratingDisplay.text += " " + Math.Round(msDiff) + "ms";
+            _ratingDisplay.text += " " + combo + " "+ Math.Round(msDiff) + "ms";
             _ratingDisplay.x = (float)((Constants.BUFFERWIDTH * 0.5) - (_ratingDisplay.getWidth() * 0.5)-(_gameData.noteSkinData.spacing*0.5));
 
 
@@ -285,7 +308,7 @@ namespace random_game
         }
         void updateAccuracy()
         {
-            accuracy = (float)((perfects + (greats * 0.75) + (oks * 0.5) + (bads * 0.25)) / (notesHit + notesMissed));
+            accuracy = (float)((perfects + (greats * 0.85) + (oks * 0.65) + (bads * 0.35)) / (notesHit + notesMissed));
             accuracy *= 10000;
             accuracy = (float)Math.Round(accuracy);
             accuracy = (float)(accuracy * 0.01);
@@ -332,6 +355,7 @@ namespace random_game
                     if (!n.hitNote && n.lane < _gameData.keyCount) //stop broken notes from causing misses
                     {
                         notesMissed++;
+                        combo = 0;
                         updateAccuracy();
                     }
                         
@@ -399,8 +423,41 @@ namespace random_game
                     changeRoom(new MainMenu());
                 }
             }
-
         }
 
+
+        public override void changeRoom(BaseGameClass room)
+        {
+            _gameData.script.killScript();
+            base.changeRoom(room);
+        }
+        private PauseMenu _pauseMenu;
+        private TimeSpan audioPauseTime; //songTime != audiotime when at different speeds
+        private float songPauseTime;
+        public void pause()
+        {
+            paused = true;
+            songPauseTime = _gameData.songTime;
+            _mediaPlayer.Pause();
+            _pauseMenu = new PauseMenu(this);
+            
+        }
+        public void unpause()
+        {
+            if (startedSong)
+            {
+
+                //_mediaPlayer.Position = TimeSpan.FromMilliseconds(_gameData.songTime); //automatically unpauses
+                _gameData.songTime = (float)_mediaPlayer.Position.TotalMilliseconds;
+                _mediaPlayer.Play();
+
+            }
+            paused = false;
+        }
+
+        public void restartSong()
+        {
+            changeRoom(new Game(_gameData.songName, chartName));
+        }
     }
 }

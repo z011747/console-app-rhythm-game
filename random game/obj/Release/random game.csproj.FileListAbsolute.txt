@@ -5,3 +5,13 @@ C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Release\ran
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Release\random game.csproj.CoreCompileInputs.cache
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Release\random game.exe
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Release\random game.pdb
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\lua54.dll
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\liblua54.dylib
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\x86\lua54.dll
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\x64\lua54.dll
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\x64\liblua54.so
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\KeraLua.dll
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\Newtonsoft.Json.dll
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\NLua.dll
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\KeraLua.xml
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\Newtonsoft.Json.xml

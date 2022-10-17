@@ -61,16 +61,30 @@ namespace random_game
 
                 if (roundedY >= 0 && roundedY < Constants.BUFFERHEIGHT) //if within bounds
                 {
-                    int drawOffset = 0;
+                    int drawOffset = 0; //for empty spaces
                     while (lines[i][0] == ' ')
                     {
                         lines[i] = lines[i].Remove(0, 1);
                         drawOffset++;
                     }
-                    Console.SetCursorPosition(roundedX+drawOffset, roundedY); //set the cursor correctly
-                    Console.BackgroundColor = BGColor; //set colors
-                    Console.ForegroundColor = FGColor;
-                    Console.Write(lines[i]); //draw the string
+
+                    int clipOffset = 0; //for left side clipping
+                    if (roundedX < 0)
+                    {
+                        while(roundedX + drawOffset + clipOffset < 0)
+                        {
+                            if (lines[i].Length > 0)
+                                lines[i] = lines[i].Remove(0, 1);
+                            clipOffset++;
+                        }
+                    }
+                    if (roundedX > 0-getWidth())
+                    {
+                        Console.SetCursorPosition(roundedX + drawOffset + clipOffset, roundedY); //set the cursor correctly
+                        Console.BackgroundColor = BGColor; //set colors
+                        Console.ForegroundColor = FGColor;
+                        Console.Write(lines[i]); //draw the string
+                    }
                 }
             }
         }

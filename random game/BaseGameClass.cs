@@ -92,7 +92,7 @@ namespace random_game
 
 
 
-        public void changeRoom(BaseGameClass room)
+        public virtual void changeRoom(BaseGameClass room)
         {
             //drawing = false;
             running = false;

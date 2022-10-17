@@ -20,13 +20,16 @@ namespace random_game
         public float beatTime { get; private set; }
 
         public float songSpeed { get; private set; }
-        private string audioName;
+        public string audioName { get; private set; }
 
         public NoteSkinData noteSkinData { get; set; }
 
         public List<Note> notes = new List<Note>();
         public List<Note> renderedNotes = new List<Note>();
         public List<Receptor> receptors = new List<Receptor>();
+
+        public LuaScript script;
+
         public GameData(string songName, string audioName)
         {
             this.songName = songName;

@@ -105,9 +105,10 @@ namespace random_game
                 for (int i = 0; i < lines.Length; i++)
                 {
                     int roundedTop = (int)Math.Round(longNoteTop) + i;
-                    if (roundedTop >= 0 && roundedTop < Constants.BUFFERHEIGHT)
+                    int roundedX = (int)Math.Round(x + offsetX) + _gameData.noteSkinData.longNoteOffset;
+                    if (roundedTop >= 0 && roundedTop < Constants.BUFFERHEIGHT && roundedX >= 0)
                     {
-                        Console.SetCursorPosition((int)Math.Round(x + offsetX)+ _gameData.noteSkinData.longNoteOffset, roundedTop);
+                        Console.SetCursorPosition(roundedX, roundedTop);
                         Console.Write(lines[i]); //make sure it goes to next line properly
                     }
                 }
