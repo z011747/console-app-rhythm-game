@@ -20,8 +20,8 @@ namespace random_game
         public override void update(float dt)
         {
             base.update(dt);
-            lerpedX = Constants.lerp(lerpedX, x, lerpSpeed * dt);
-            lerpedY = Constants.lerp(lerpedY, y, lerpSpeed * dt);
+            lerpedX = MathUtil.lerp(lerpedX, x, lerpSpeed * dt);
+            lerpedY = MathUtil.lerp(lerpedY, y, lerpSpeed * dt);
         }
 
         public override void draw()

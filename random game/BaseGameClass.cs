@@ -11,7 +11,8 @@ namespace random_game
     {
         public List<Object> objects = new List<Object>();
         public bool running = true;
-        //public bool drawing = true;
+        public bool drawing = true;
+        static Thread drawThread = null;
         public BaseGameClass()
         {
         }
@@ -19,6 +20,13 @@ namespace random_game
         {
             //startDrawThread();
             DateTime _previousGameTime = DateTime.Now;
+
+            if (drawThread != null)
+            {
+                drawThread.Abort();
+            }
+            drawThread = new Thread(drawingOnThread);
+            drawThread.Start();
 
             while (running)
             {
@@ -29,31 +37,19 @@ namespace random_game
                 //sw.Stop();
                 //input();
                 update((float)(GameTime.TotalSeconds));
-                draw();
+                //draw();
 
                 Thread.Sleep(1);
             }
-        }
-        /*public void startDrawThread()
-        {
-            Thread drawThread = new Thread(drawingOnThread);
-            drawThread.Start();
         }
         public void drawingOnThread()
         {
             while (drawing)
             {
-                if (drawing)
-                {
-                    draw();
-                    Thread.Sleep(1);
-                }
-                else
-                {
-                    break;
-                }
+                draw();
+                Thread.Sleep(1);
             }
-        }*/
+        }
         public virtual void update(float dt)
         {
             for (int i = 0; i < objects.Count; i++)
@@ -94,10 +90,8 @@ namespace random_game
 
         public virtual void changeRoom(BaseGameClass room)
         {
-            //drawing = false;
+            drawing = false;
             running = false;
-            //drawThread.Abort();
-            //drawThread = null;
             while (objects.Count > 0)
             {
                 objects[0] = null;

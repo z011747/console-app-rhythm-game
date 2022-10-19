@@ -57,6 +57,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BarObject.cs" />
     <Compile Include="BaseGameClass.cs" />
     <Compile Include="BaseSelectionMenu.cs" />
     <Compile Include="Chart.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameData.cs" />
     <Compile Include="GameSettings.cs" />
+    <Compile Include="KeybindMenu.cs" />
     <Compile Include="LerpedObject.cs" />
     <Compile Include="LuaScript.cs" />
     <Compile Include="MainMenu.cs" />

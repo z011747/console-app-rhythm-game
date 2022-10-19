@@ -9,6 +9,15 @@ using Newtonsoft.Json.Linq;
 
 namespace random_game
 {
+    class SettingsJson
+    {
+        public float scrollSpeed;
+        public bool downscroll;
+        public bool noteQuants;
+        public bool autoPlay;
+        public string noteSkin;
+        public SettingsJson() { }
+    }
     class GameSettings
     {
         public static float scrollSpeed = 1.0f;
@@ -22,7 +31,7 @@ namespace random_game
         
         public static void loadSettings()
         {
-            string path = System.IO.Directory.GetCurrentDirectory() + "saveData.json";
+            string path = System.IO.Directory.GetCurrentDirectory() + "/saveData.json";
             if (File.Exists(path))
             {
                 string saveDataStr = "";
@@ -31,8 +40,26 @@ namespace random_game
                     string s = sr.ReadToEnd();
                     saveDataStr += s;
                 }
-                JObject saveDataJson = JObject.Parse(saveDataStr);
+                SettingsJson saveDataJson = JsonConvert.DeserializeObject<SettingsJson>(saveDataStr);
+                scrollSpeed = saveDataJson.scrollSpeed;
+                downscroll = saveDataJson.downscroll;
+                noteQuants = saveDataJson.noteQuants;
+                autoPlay = saveDataJson.autoPlay;
+                noteSkin = saveDataJson.noteSkin;
             }
+        }
+
+        public static void saveSettings()
+        {
+            string path = System.IO.Directory.GetCurrentDirectory() + "/saveData.json";
+            SettingsJson saveDataJson = new SettingsJson();
+            saveDataJson.scrollSpeed = scrollSpeed;
+            saveDataJson.downscroll = downscroll;
+            saveDataJson.noteQuants = noteQuants;
+            saveDataJson.autoPlay = autoPlay;
+            saveDataJson.noteSkin = noteSkin;
+            string jsonString = JsonConvert.SerializeObject(saveDataJson);
+            File.WriteAllText(path, jsonString);
         }
     }
 }

@@ -61,7 +61,7 @@ namespace random_game
             for (int i = 0; i < receptors.Count; i++)
             {
                 Receptor r = receptors[i];
-                lerpedReverse = Constants.lerp(lerpedReverse, reverse, dt * 4);
+                lerpedReverse = MathUtil.lerp(lerpedReverse, reverse, dt * 4);
                 float targetY = 1 + (Constants.BUFFERHEIGHT - r.getHeight()-2) * lerpedReverse;
                 r.y = targetY;
             }
@@ -75,7 +75,10 @@ namespace random_game
             switch (optionList[selectedOption])
             {
                 case "Scroll Speed":
-                    float newScrollSpeed = (float)(Math.Round((GameSettings.scrollSpeed + (0.1 * change))*10)/10); //make sure its rounded
+                    //float newScrollSpeed = (float)(Math.Round()*10)/10); //make sure its rounded
+                    float newScrollSpeed = MathUtil.roundToDecimalPlace((float)(GameSettings.scrollSpeed + (0.1 * change)), 1);
+                    newScrollSpeed = MathUtil.bound(newScrollSpeed, 0.1f, 10.0f); //cant go below 0.1, cant go above 10
+
                     GameSettings.scrollSpeed = newScrollSpeed;
                     break;
                 case "Scroll Direction":
@@ -138,6 +141,7 @@ namespace random_game
             switch (optionList[selection])
             {
                 case "Go Back":
+                    GameSettings.saveSettings();
                     changeRoom(new MainMenu());
                     break;
 

@@ -20,6 +20,7 @@ namespace random_game
         private Object _displayText;
         private Object _FPSDisplay;
         private Object _ratingDisplay;
+        private BarObject _healthBar;
         private int notesHit = 0;
         private int notesMissed = 0;
 
@@ -29,6 +30,7 @@ namespace random_game
         private int greats = 0;
         private int oks = 0;
         private int bads = 0;
+        private int health = 50;
 
         public bool paused = false;
 
@@ -65,6 +67,9 @@ namespace random_game
 
             _ratingDisplay = new Object(0, (_gameData.downscroll ? 29 : 0), _gameData);
             objects.Add(_ratingDisplay);
+
+            _healthBar = new BarObject(_displayText.x, _displayText.y + 10, _gameData, 0, 100, 20);
+            objects.Add(_healthBar);
 
             startUpdateLoop(); //run after everything else
         }
@@ -241,6 +246,7 @@ namespace random_game
                 {
                     notesMissed++;
                     combo = 0;
+                    addHealth(-15);
                     updateAccuracy();
                 }
                 LongNoteTimes[lane] = 0;
@@ -283,11 +289,13 @@ namespace random_game
                     perfects++;
                     _ratingDisplay.text = "Perfect";
                     _ratingDisplay.FGColor = ConsoleColor.Cyan;
+                    addHealth(5);
                     break;
                 case 1: //great 
                     greats++;
                     _ratingDisplay.text = "Great";
                     _ratingDisplay.FGColor = ConsoleColor.Green;
+                    addHealth(2);
                     break;
                 case 2: //ok
                     oks++;
@@ -329,6 +337,9 @@ namespace random_game
                 if (currentTime > _mediaPlayer.NaturalDuration.TimeSpan)
                     currentTime = _mediaPlayer.NaturalDuration.TimeSpan; //if song time is above max then it should just be max
 
+                //_songTimeBar.maxValue = (float)_mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+                //_songTimeBar.updateBarValue((float)currentTime.TotalMilliseconds);
+
                 _displayText.text += "\n" + ((float)currentTime.Minutes) + ":" + //current minutes
                     (((float)currentTime.Seconds) < 10 ? "0" : "") + //add a 0 in front to make it look better
                     ((float)currentTime.Seconds) + " / " + //current seconds
@@ -337,8 +348,24 @@ namespace random_game
                     (((float)_mediaPlayer.NaturalDuration.TimeSpan.Seconds) < 10 ? "0" : "") +
                     ((float)_mediaPlayer.NaturalDuration.TimeSpan.Seconds); //total time seconds
             }
+            _displayText.text += "\nHP: ";
+            _healthBar.x = _displayText.x + 4;
+            _healthBar.y = _displayText.y + _displayText.getHeight()-1;
+            _healthBar.updateBarValue(health);
             if (_gameData.autoPlay)
                 _displayText.text += "\nAUTOPLAY";
+
+
+        }
+
+        void addHealth(int change)
+        {
+            health += change;
+            health = MathUtil.bound(health, -1, 100);
+            if (health < 0)
+            {
+                //die
+            }
         }
 
 
@@ -356,6 +383,7 @@ namespace random_game
                     {
                         notesMissed++;
                         combo = 0;
+                        addHealth(-15);
                         updateAccuracy();
                     }
                         

@@ -41,7 +41,7 @@ namespace random_game
         
         public virtual void draw()
         {
-            if (!doDraw)
+            if (!doDraw || text == "")
                 return;
 
             

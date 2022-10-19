@@ -10,6 +10,7 @@ namespace random_game
     class SongSelectionMenu : BaseSelectionMenu
     {
         Object _text;
+        Object _songSpeedtext;
 
         public SongSelectionMenu() : base()
         {
@@ -17,6 +18,8 @@ namespace random_game
             _text.text = "----------------------------------------------------";
             _text.text += "\nSong Selection";
             _text.text += "\n----------------------------------------------------";
+            _songSpeedtext = new Object(30, 4, null);
+            _songSpeedtext.text = "Song Speed: " + GameSettings.songSpeed + "x";
 
             string[] songFolders = Directory.GetDirectories(System.IO.Directory.GetCurrentDirectory() + "/songs/");
             foreach (string file in songFolders)
@@ -24,11 +27,14 @@ namespace random_game
                 string newfile = file.Replace(System.IO.Directory.GetCurrentDirectory() + "/songs/", "");
                 optionList.Add(newfile);
             }
+            if (optionList.Count == 0)
+                optionList.Add("No Songs Found.");
 
             optionList.Add("Go Back");
 
             setupMenu();
             objects.Add(_text);
+            objects.Add(_songSpeedtext);
             startUpdateLoop();
         }
 
@@ -40,11 +46,23 @@ namespace random_game
                 case "Go Back":
                     changeRoom(new MainMenu());
                     break;
+                case "No Songs Found.":
+                    break;
                 default:
                     changeRoom(new SongDiffSelection(optionList[selection].Trim()));
                     break;
             }
 
+        }
+
+        public override void onSideSelection(int change)
+        {
+            base.onSideSelection(change);
+
+            GameSettings.songSpeed = MathUtil.roundToDecimalPlace((float)(GameSettings.songSpeed + (0.05 * change)), 2);
+            GameSettings.songSpeed = MathUtil.bound(GameSettings.songSpeed, 0.1f, 8.0f);
+
+            _songSpeedtext.text = "Song Speed: " + GameSettings.songSpeed + "x";
         }
     }
 
@@ -63,7 +81,7 @@ namespace random_game
             _text.text += "\n----------------------------------------------------";
 
 
-            string[] fileExts = { ".chart", ".json" };
+            string[] fileExts = { ".chart", ".json", ".sm" };
 
             foreach (string fileExt in fileExts)
             {
@@ -76,6 +94,8 @@ namespace random_game
                     optionList.Add(newfile);
                 }
             }
+            if (optionList.Count == 0)
+                optionList.Add("No Charts Found.");
 
 
 
@@ -84,8 +104,11 @@ namespace random_game
 
             setupMenu();
             objects.Add(_text);
+            
             startUpdateLoop();
         }
+
+
 
         public override void onSelect(int selection)
         {
@@ -94,6 +117,8 @@ namespace random_game
             {
                 case "Go Back":
                     changeRoom(new MainMenu());
+                    break;
+                case "No Charts Found.":
                     break;
                 default:
                     changeRoom(new Game(songName, chartWithFileExt[selection].Trim()));

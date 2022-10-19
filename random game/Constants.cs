@@ -53,8 +53,30 @@ namespace random_game
         public const int BUFFERWIDTH = 120;
         public const int BUFFERHEIGHT = 30;
 
-        //basic lerp function that idk where else to put
-        public static float lerp(float num1, float num2, float ratio) { return num1 + ratio* (num2 - num1);}
 
+    }
+}
+
+class MathUtil
+{
+    //just some math funcs
+    public static float lerp(float num1, float num2, float ratio) { return num1 + ratio * (num2 - num1); }
+    public static int bound(int num, int min, int max) { if (num < min) return min; if (num > max) return max; return num; }
+    public static float bound(float num, float min, float max) { if (num < min) return min; if (num > max) return max; return num; }
+    public static double bound(double num, double min, double max) { if (num < min) return min; if (num > max) return max; return num; }
+
+    public static float roundToDecimalPlace(float num, int decimals)
+    {
+        if (decimals <= 0)
+            return num;
+
+        float mult = (10 * decimals);
+
+        return (float)(Math.Round((num) * mult) / mult);
+    }
+
+    public static float scaleNumberToRange(float value, float startMin, float startMax, float endMin, float endMax)
+    {
+        return ((endMax - endMin) * (value - startMin) / (startMax - startMin)) + endMin;
     }
 }

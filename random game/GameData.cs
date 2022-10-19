@@ -35,7 +35,7 @@ namespace random_game
             this.songName = songName;
             this.audioName = audioName;
             downscroll = GameSettings.downscroll;
-            songSpeed = 1.0f;
+            songSpeed = GameSettings.songSpeed;
             songTime = -1000*Math.Abs(songSpeed); //1 sec before song start
             keyCount = 4;
             scrollSpeed = GameSettings.scrollSpeed/songSpeed;
