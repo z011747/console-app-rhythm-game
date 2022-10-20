@@ -32,3 +32,15 @@ C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Debug\KeraL
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Debug\NLua.dll
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Debug\KeraLua.xml
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Debug\Betwixt.dll
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\lua54.dll
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\liblua54.dylib
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\x86\lua54.dll
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\x64\lua54.dll
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\x64\liblua54.so
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\Betwixt.dll
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\KeraLua.dll
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\Newtonsoft.Json.dll
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\NLua.dll
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\KeraLua.xml
+C:\Users\z011747l\Documents\GitHub\random-game\random game\bin\Debug\Newtonsoft.Json.xml
+C:\Users\z011747l\Documents\GitHub\random-game\random game\obj\Debug\random game.csproj.CopyComplete

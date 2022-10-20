@@ -17,7 +17,7 @@ namespace random_game
         public bool running = true;
         GameData _gameData;
         //public Tweener<T> tweener;
-        public List<Tweener<float>> tweens = new List<Tweener<float>>();
+        public List<LuaTween> tweens = new List<LuaTween>();
         public LuaScript(string path, GameData _gameData)
         {
             state = new Lua();
@@ -95,10 +95,14 @@ namespace random_game
             //tweenManager.Update(dt);
             if (tweens.Count > 0)
             {
-                foreach (Tweener<float> t in tweens)
+                for(int i = tweens.Count-1; i >= 0; i--)
                 {
-                    t.Update(dt);
+                    LuaTween t = tweens[i];
+                    t.updateValue(dt);
+                    if (t.shouldRemove)
+                        tweens.Remove(t);
                 }
+                
             }
 
 
@@ -243,8 +247,9 @@ namespace random_game
             Object receptor = Game.instance._gameData.receptors[i];
             //Game.instance._gameData.script.tweenManager.Tween(receptor, new { x = pos }, time).Ease(getEaseFromString(ease));
             Tweener<float> tween = new Tweener<float>(receptor.x, pos, time, Ease.Cubic.InOut);
-            addTween(tween);
-
+            PropertyInfo prop = receptor.GetType().GetProperty("x");
+            LuaTween luaTween = new LuaTween(tween, prop, receptor);
+            Game.instance._gameData.script.tweens.Add(luaTween);
 
         }
         static public void tweenReceptorY(int i, float pos, float time, string ease)
@@ -257,7 +262,7 @@ namespace random_game
 
         static void addTween(Tweener<float> tween)
         {
-            Game.instance._gameData.script.tweens.Add(tween);
+            //Game.instance._gameData.script.tweens.Add(tween);
         }
 
         /*static Func<float, float> getEaseFromString(string ease) //seems like the best way to do this
@@ -283,5 +288,32 @@ namespace random_game
 
             return Ease.BackIn;
         }*/
+    }
+}
+
+
+class LuaTween
+{
+    Tweener<float> tween;
+    dynamic instance;
+    PropertyInfo property;
+    public bool shouldRemove = false;
+    public LuaTween(Tweener<float> tween, PropertyInfo property, dynamic instance)
+    {
+        this.tween = tween;
+        this.property = property;
+        this.instance = instance;
+    }
+    public void updateValue(float dt)
+    {
+        if (tween.Running)
+        {
+            tween.Update(dt); //update tween
+            property.SetValue(instance, tween.Value); //use reflection to set the value
+        }
+        else
+        {
+            shouldRemove = true; //remove when tween is finished
+        }
     }
 }
