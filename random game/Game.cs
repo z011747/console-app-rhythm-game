@@ -37,27 +37,35 @@ namespace random_game
         public static Game instance; //i know these arent great but i need it for lua
 
         private string chartName;
+
+        public Object _debugText; //used for testing in lua
+
         public Game(string songName, string chartName) : base()
         {
             instance = this;
+
+            
 
             string audioName = getAudioName(songName);
             this.chartName = chartName; //need song restarts
 
 
             _gameData = new GameData(songName, audioName);
-           
+            _debugText = new Object(0, 5, _gameData);
+            objects.Add(_debugText);
+            _debugText.text = "";
             _mediaPlayer = new MediaPlayer();
             
             _chart = new Chart(_gameData.getSongPath()+"/"+chartName, _gameData);
             _gameData.noteSkinData = new NoteSkinData(_gameData, GameSettings.noteSkin);
             _gameData.recalculateBeats();
-            _gameData.script = new LuaScript(_gameData.getSongPath() + "/script.lua", _gameData);
+            
 
 
             initSong();
             initReceptors();
             initNotes();
+            _gameData.script = new LuaScript(_gameData.getSongPath() + "/script.lua", _gameData); //do after notes/receptors are made
             setupBinds();
             _displayText = new Object(_gameData.receptors[_gameData.keyCount-1].x+10, 5, _gameData);
             objects.Add(_displayText);
@@ -67,6 +75,7 @@ namespace random_game
 
             _ratingDisplay = new Object(0, (_gameData.downscroll ? 29 : 0), _gameData);
             objects.Add(_ratingDisplay);
+            _ratingDisplay.text = "";
 
             _healthBar = new BarObject(_displayText.x, _displayText.y + 10, _gameData, 0, 100, 20);
             objects.Add(_healthBar);
@@ -142,7 +151,7 @@ namespace random_game
             {
                 input(); //run input code
                 CheckIfNotesNeedAdding();
-                //_gameData.script.update(dt);
+                _gameData.script.update(dt);
 
                 _gameData.songTime += (dt) * 1000 * _gameData.songSpeed; //increase song time (in milliseconds), seperate from audio time to match for song speed
                 base.update(dt); //update objects/notes
@@ -185,6 +194,9 @@ namespace random_game
 
         public void input()
         {
+            if (!WindowsUtil.isWindowFocused())
+                return;
+
             for (int i = 0; i < Keybinds.Count; i++)
             {
                 bool checkPress = false;
@@ -260,7 +272,7 @@ namespace random_game
             if (n.sustainLength == 0) //regular notes
                 n.shouldRemove = true;
             else
-                LongNoteTimes[n.lane] = n.time + n.sustainLength;
+                LongNoteTimes[n.lane] = n.getTime() + n.sustainLength;
             n.doDraw = false;
             n.hitNote = true;
             _gameData.receptors[n.lane].BGColor = n.BGColor;
@@ -272,7 +284,7 @@ namespace random_game
 
         void checkNoteRating(Note n)
         {
-            float msDiff = n.time - _gameData.songTime;
+            float msDiff = n.getTime() - _gameData.songTime;
             int[] timings = { Constants.PERFECTTIMING, Constants.GREATTIMING, Constants.OKTIMING };
             int ratingID = 3; //bad
             for (int i = 0; i < timings.Length; i++)
@@ -412,7 +424,7 @@ namespace random_game
 
 
                     Note n = _gameData.notes[0];
-                    if (n.time < _gameData.songTime + ((_gameData.beatTime * 4) / _gameData.scrollSpeed))
+                    if (n.getTime() < _gameData.songTime + ((_gameData.beatTime * 4) / _gameData.scrollSpeed))
                     {
                         _gameData.renderedNotes.Add(n);
                         objects.Add(n);
@@ -433,7 +445,7 @@ namespace random_game
             for (int i = 0; i < _gameData.renderedNotes.Count; i++)
             {
                 Note n = _gameData.renderedNotes[i];
-                if (_gameData.songTime > n.time && !n.hitNote)
+                if (_gameData.songTime > n.getTime() && !n.hitNote)
                 {
                     onHitNote(n);
                     _gameData.receptors[n.lane].autoPlayReset = 0.1f + (n.sustainLength * 0.001f / _gameData.songSpeed);

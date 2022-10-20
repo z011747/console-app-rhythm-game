@@ -44,10 +44,14 @@ namespace random_game
         public override void update(float dt)
         {
             base.update(dt);
+            if (!WindowsUtil.isWindowFocused())
+                return;
+
             if (delay > 0)
             {
                 delay -= dt;
             }
+
             if (Keyboard.IsKeyDown(Key.Enter) && !_controlEnter && delay < 0) //delay so you dont press in the next menu
                 onSelect(selectedOption);
             if (Keyboard.IsKeyDown(Key.Up) && !_controlUp) //only 1 frame

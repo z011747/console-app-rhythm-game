@@ -169,7 +169,7 @@ namespace random_game
                     string[] bpms = data[1].Split(',');
                     if (bpms.Length > 1)
                     {
-                        MessageBox.Show("Cannot load songs with bpm changes.");
+                        MessageBox.Show("Cannot load songs with bpm changes."); //will sort this out later
                     }
                     string[] bpmData = bpms[0].Split('=');
 
@@ -181,7 +181,8 @@ namespace random_game
                 {
                     float offset = 0;
                     float.TryParse(data[1], out offset);
-                    currentParsingTime -= (offset * 1000);
+                    //currentParsingTime -= (offset * 1000);
+                    _gameData.songOffset = -(offset * 1000);
                 }
                 else if(data[0].Contains("#NOTES"))
                 {

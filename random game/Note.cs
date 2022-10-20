@@ -19,7 +19,6 @@ namespace random_game
         public bool missedNote = false;
 
 
-
         public Note(float time, int lane, float sustainLength, GameData _gameData) : base(0, 0, _gameData)
         {
             this.x = 2 + (lane * _gameData.noteSkinData.spacing); 
@@ -44,13 +43,13 @@ namespace random_game
             //doDraw = false;
 
             canHitNote = false;
-            if (_gameData.songTime < time + Constants.EARLYHITTIMING &&
-                _gameData.songTime > time - Constants.LATEHITTIMING)
+            if (_gameData.songTime < getTime() + Constants.EARLYHITTIMING &&
+                _gameData.songTime > getTime() - Constants.LATEHITTIMING)
             {
                 canHitNote = true;
             }
 
-            if (_gameData.songTime > time+_gameData.beatTime+sustainLength)
+            if (_gameData.songTime > getTime() + _gameData.beatTime+sustainLength)
                 shouldRemove = true;
 
             if (missedNote)
@@ -81,14 +80,14 @@ namespace random_game
 
                 if (_gameData.downscroll) //on downscroll, top is the end of the long note, bottom is the start of the long note, its the otherway around on upscroll
                 {
-                    longNoteTop = targetY - (float)(((_gameData.songTime - (time+sustainLength)) * _gameData.scrollSpeed * 0.05) * scroll);
+                    longNoteTop = targetY - (float)(((_gameData.songTime - (getTime() + sustainLength)) * _gameData.scrollSpeed * 0.05) * scroll);
                     longNoteBottom += offsetToCenter;
                     if (longNoteBottom > targetY+ offsetToCenter) //clip to receptor
                         longNoteBottom = targetY+ offsetToCenter;
                 }
                 else
                 {
-                    longNoteBottom = targetY - (float)(((_gameData.songTime - (time + sustainLength)) * _gameData.scrollSpeed * 0.05) * scroll);
+                    longNoteBottom = targetY - (float)(((_gameData.songTime - (getTime() + sustainLength)) * _gameData.scrollSpeed * 0.05) * scroll);
                     longNoteTop += offsetToCenter;
                     if (longNoteTop < targetY+ offsetToCenter) //clip to receptor
                         longNoteTop = targetY+ offsetToCenter;
@@ -120,7 +119,7 @@ namespace random_game
             float targetY = getTargetY();
             float scroll = getScrollDirection();
 
-            y = targetY - (float)(((_gameData.songTime - time) * _gameData.scrollSpeed * 0.05)*scroll);
+            y = targetY - (float)(((_gameData.songTime - getTime()) * _gameData.scrollSpeed * 0.05)*scroll);
             x = getTargetX();
         }
 
@@ -146,6 +145,11 @@ namespace random_game
             if (_gameData.downscroll)
                 scroll *= -1;
             return scroll;
+        }
+
+        public float getTime()
+        {
+            return this.time + _gameData.songOffset;
         }
     }
 }

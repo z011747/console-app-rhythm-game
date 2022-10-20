@@ -14,7 +14,7 @@ namespace random_game
         {
             Console.CursorVisible = false;
             Console.Title = "Simple Console App Rhythm Game";
-            
+            WindowsUtil.centerScreen();
             GameSettings.loadSettings();
             new MainMenu(); //load main menu
         }

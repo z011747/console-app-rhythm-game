@@ -10,8 +10,8 @@ namespace random_game
     class GameData
     {
         public float songTime { get; set; }
-        public bool downscroll { get; private set; }        
-        public float scrollSpeed { get; private set; }
+        public bool downscroll { get; set; }     
+        public float scrollSpeed { get; set; }
 
         public bool autoPlay { get; private set; }
         public int keyCount { get; set; }
@@ -30,10 +30,13 @@ namespace random_game
 
         public LuaScript script;
 
+        public float songOffset = 0;
+
         public GameData(string songName, string audioName)
         {
             this.songName = songName;
             this.audioName = audioName;
+            songOffset = 0;
             downscroll = GameSettings.downscroll;
             songSpeed = GameSettings.songSpeed;
             songTime = -1000*Math.Abs(songSpeed); //1 sec before song start
