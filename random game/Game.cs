@@ -57,7 +57,17 @@ namespace random_game
             _mediaPlayer = new MediaPlayer();
             
             _chart = new Chart(_gameData.getSongPath()+"/"+chartName, _gameData);
-            _gameData.noteSkinData = new NoteSkinData(_gameData, GameSettings.noteSkin);
+            try
+            {
+                _gameData.noteSkinData = new NoteSkinData(_gameData, GameSettings.noteSkin);
+            }
+            catch(Exception e)
+            {
+                Constants.errorPopup("Error loading Noteskin.");
+                _gameData.noteSkinData = new NoteSkinData(_gameData, "Default");
+                GameSettings.noteSkin = "Default";
+            }
+            
             _gameData.recalculateBeats();
             
 
@@ -180,9 +190,9 @@ namespace random_game
         void setupBinds()
         {
             //fill binds
-            for (int i = 0; i < Constants.defaultBinds[_gameData.keyCount-1].Count; i++)
+            for (int i = 0; i < GameSettings.keyBinds[_gameData.keyCount-1].Count; i++)
             {
-                Keybinds.Add(Constants.defaultBinds[_gameData.keyCount - 1][i]);
+                Keybinds.Add(GameSettings.keyBinds[_gameData.keyCount - 1][i]);
             }
 
             for (int i = 0; i < Keybinds.Count; i++)

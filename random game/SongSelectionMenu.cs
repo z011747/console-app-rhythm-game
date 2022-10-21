@@ -21,12 +21,20 @@ namespace random_game
             _songSpeedtext = new Object(30, 4, null);
             _songSpeedtext.text = "Song Speed: " + GameSettings.songSpeed + "x";
 
-            string[] songFolders = Directory.GetDirectories(System.IO.Directory.GetCurrentDirectory() + "/songs/");
-            foreach (string file in songFolders)
+            try
             {
-                string newfile = file.Replace(System.IO.Directory.GetCurrentDirectory() + "/songs/", "");
-                optionList.Add(newfile);
+                string[] songFolders = Directory.GetDirectories(System.IO.Directory.GetCurrentDirectory() + "/songs/");
+                foreach (string file in songFolders)
+                {
+                    string newfile = file.Replace(System.IO.Directory.GetCurrentDirectory() + "/songs/", "");
+                    optionList.Add(newfile);
+                }
             }
+            catch(Exception e)
+            {
+                //no songs found
+            }
+
             if (optionList.Count == 0)
                 optionList.Add("No Songs Found.");
 

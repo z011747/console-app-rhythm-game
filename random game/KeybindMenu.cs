@@ -44,7 +44,6 @@ namespace random_game
                     running = false;
                     break;
             }
-
         }
     }
 

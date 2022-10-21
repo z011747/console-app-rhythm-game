@@ -81,7 +81,17 @@ namespace random_game
         void regenNotesAndReceptors()
         {
             //refresh noteskin
-            _gameData.noteSkinData = new NoteSkinData(_gameData, GameSettings.noteSkin);
+            try
+            {
+                _gameData.noteSkinData = new NoteSkinData(_gameData, GameSettings.noteSkin);
+            }
+            catch(Exception e)
+            {
+                _gameData.noteSkinData = new NoteSkinData(_gameData, "Default");
+                Constants.errorPopup("Error loading Noteskin.");
+                GameSettings.noteSkin = "Default";
+            }
+            
             //regenerate receptors
             for (int i = 0; i < 4; i++)
             {

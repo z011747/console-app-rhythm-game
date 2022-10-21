@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using NLua;
-using System.Windows.Forms;
 using System.Reflection;
 using Betwixt;
 
@@ -35,7 +34,7 @@ namespace random_game
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                Constants.errorPopup(e.Message);
                 running = false;
                 killScript();
             }
@@ -131,7 +130,7 @@ namespace random_game
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                Constants.errorPopup(e.Message);
                 running = false;
             }
         }

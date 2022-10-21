@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Windows.Forms;
 
 namespace random_game
 {
@@ -30,7 +29,7 @@ namespace random_game
             //string chartPath = System.IO.Directory.GetCurrentDirectory() + "/assets/charts/" + chartName + ".chart"; //load chart
             if (!File.Exists(chartPath))
             {
-                MessageBox.Show(chartPath + " does not exist");
+                Constants.errorPopup(chartPath + " does not exist");
                 return;
             }
 
@@ -51,7 +50,7 @@ namespace random_game
             }
             catch(Exception e)
             {
-                MessageBox.Show("Error Loading Chart: " + e.Message);
+                Constants.errorPopup("Error Loading Chart: " + e.Message);
                 return;
             }
 
@@ -169,7 +168,7 @@ namespace random_game
                     string[] bpms = data[1].Split(',');
                     if (bpms.Length > 1)
                     {
-                        MessageBox.Show("Cannot load songs with bpm changes."); //will sort this out later
+                        Constants.errorPopup("Cannot load songs with bpm changes."); //will sort this out later
                     }
                     string[] bpmData = bpms[0].Split('=');
 
