@@ -24,7 +24,7 @@ namespace random_game
         {
             for (int i = 0; i < optionList.Count; i++)
             {
-                LerpedObject obj = new LerpedObject(2, 5 + i, null);
+                LerpedObject obj = new LerpedObject(5-(i*2), 10+(i*10), null); //start off to the side and lerp in
                 obj.lerpSpeed = 10;
                 obj.text = optionList[i];
                 objects.Add(obj);

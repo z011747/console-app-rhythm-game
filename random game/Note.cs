@@ -13,7 +13,6 @@ namespace random_game
         public float sustainLength { get; set; }
 
         public bool shouldRemove = false;
-
         public bool hitNote = false;
         public bool canHitNote = false;
         public bool missedNote = false;
@@ -82,14 +81,14 @@ namespace random_game
                 {
                     longNoteTop = targetY - (float)(((_gameData.songTime - (getTime() + sustainLength)) * _gameData.scrollSpeed * 0.05) * scroll);
                     longNoteBottom += offsetToCenter;
-                    if (longNoteBottom > targetY+ offsetToCenter) //clip to receptor
+                    if (longNoteBottom > targetY+ offsetToCenter && !missedNote) //clip to receptor
                         longNoteBottom = targetY+ offsetToCenter;
                 }
                 else
                 {
                     longNoteBottom = targetY - (float)(((_gameData.songTime - (getTime() + sustainLength)) * _gameData.scrollSpeed * 0.05) * scroll);
                     longNoteTop += offsetToCenter;
-                    if (longNoteTop < targetY+ offsetToCenter) //clip to receptor
+                    if (longNoteTop < targetY+ offsetToCenter && !missedNote) //clip to receptor
                         longNoteTop = targetY+ offsetToCenter;
 
                     

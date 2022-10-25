@@ -13,7 +13,17 @@ using System.IO;
 namespace random_game
 {
     class Game : BaseGameClass
-    {        
+    {
+        private int notesHit = 0;
+        private int notesMissed = 0;
+        private int combo = 0;
+        private float accuracy = 0.0f;
+
+        private int perfects = 0;
+        private int greats = 0;
+        private int oks = 0;
+        private int bads = 0;
+
         private MediaPlayer _mediaPlayer;
         public GameData _gameData;
         private Chart _chart;
@@ -21,17 +31,10 @@ namespace random_game
         private Object _FPSDisplay;
         private Object _ratingDisplay;
         private BarObject _healthBar;
-        private int notesHit = 0;
-        private int notesMissed = 0;
 
-        private int combo = 0;
-        private float accuracy = 0.0f;
-        private int perfects = 0;
-        private int greats = 0;
-        private int oks = 0;
-        private int bads = 0;
+
         private int health = 50;
-
+        private bool failedSong = false;
         public bool paused = false;
 
         public static Game instance; //i know these arent great but i need it for lua
@@ -180,12 +183,18 @@ namespace random_game
                 updateDisplayText();
                 checkForSongEnd();
             }
-            
+            if (Keyboard.IsKeyDown(Key.Escape))
+            {
+                pause();
+            }
+            checkforDesync();
+
         }
 
         private List<Key> Keybinds = new List<Key>();
         private List<bool> KeysHeld = new List<bool>();
         private List<float> LongNoteTimes = new List<float>();
+        private List<Note> HeldNL = new List<Note>();
 
         void setupBinds()
         {
@@ -199,6 +208,7 @@ namespace random_game
             {
                 KeysHeld.Add(false);
                 LongNoteTimes.Add(-10000); //do -10000 just in case
+                HeldNL.Add(null);
             }
         }
 
@@ -225,11 +235,6 @@ namespace random_game
                     onKeyPress(i);
                 else if (!KeysHeld[i] && checkRelease)
                     onKeyRelease(i);
-            }
-
-            if (Keyboard.IsKeyDown(Key.Escape))
-            {
-                pause();
             }
         }
 
@@ -270,8 +275,11 @@ namespace random_game
                     combo = 0;
                     addHealth(-15);
                     updateAccuracy();
+                    if (HeldNL[lane] != null)
+                        HeldNL[lane].missedNote = true;
                 }
                 LongNoteTimes[lane] = 0;
+                HeldNL[lane] = null;
             }
         }
 
@@ -282,7 +290,11 @@ namespace random_game
             if (n.sustainLength == 0) //regular notes
                 n.shouldRemove = true;
             else
+            {
                 LongNoteTimes[n.lane] = n.getTime() + n.sustainLength;
+                HeldNL[n.lane] = n;
+            }
+                
             n.doDraw = false;
             n.hitNote = true;
             _gameData.receptors[n.lane].BGColor = n.BGColor;
@@ -376,18 +388,24 @@ namespace random_game
             _healthBar.updateBarValue(health);
             if (_gameData.autoPlay)
                 _displayText.text += "\nAUTOPLAY";
+            if (failedSong)
+                _displayText.text += "\nSONG FAILED";
 
 
         }
 
         void addHealth(int change)
         {
+
             health += change;
             health = MathUtil.bound(health, -1, 100);
             if (health < 0)
             {
                 //die
+                failedSong = true;
             }
+            if (failedSong)
+                health = 0;
         }
 
 
@@ -482,12 +500,15 @@ namespace random_game
             base.changeRoom(room);
         }
         private PauseMenu _pauseMenu;
-        private TimeSpan audioPauseTime; //songTime != audiotime when at different speeds
-        private float songPauseTime;
+        private float timeDiff = -int.MaxValue;
         public void pause()
         {
             paused = true;
-            songPauseTime = _gameData.songTime;
+            if (startedSong)
+            {
+                if (timeDiff == -int.MaxValue)
+                    timeDiff = (float)_mediaPlayer.Position.TotalMilliseconds- _gameData.songTime;
+            }
             _mediaPlayer.Pause();
             _pauseMenu = new PauseMenu(this);
             
@@ -497,12 +518,22 @@ namespace random_game
             if (startedSong)
             {
 
-                //_mediaPlayer.Position = TimeSpan.FromMilliseconds(_gameData.songTime); //automatically unpauses
+                //_mediaPlayer.Position = TimeSpan.FromMilliseconds(_gameData.songTime+ timeDiff); //automatically unpauses
                 _gameData.songTime = (float)_mediaPlayer.Position.TotalMilliseconds;
                 _mediaPlayer.Play();
 
             }
+            resetDrawThread();
             paused = false;
+        }
+
+        public void checkforDesync()
+        {
+            float diff = (float)Math.Abs(_mediaPlayer.Position.TotalMilliseconds - _gameData.songTime);
+            if (diff > 100)
+            {
+                _gameData.songTime = (float)_mediaPlayer.Position.TotalMilliseconds;
+            }
         }
 
         public void restartSong()

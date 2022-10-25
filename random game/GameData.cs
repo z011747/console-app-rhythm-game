@@ -10,18 +10,19 @@ namespace random_game
     class GameData
     {
         public float songTime { get; set; }
-        public bool downscroll { get; set; }     
         public float scrollSpeed { get; set; }
-
-        public bool autoPlay { get; private set; }
         public int keyCount { get; set; }
-        public string songName { get; private set; }
         public float bpm { get; set; }
+
         public float beatTime { get; private set; }
-
         public float songSpeed { get; private set; }
-        public string audioName { get; private set; }
+        public float songOffset = 0;
+        public bool downscroll { get; set; }
+        public bool autoPlay { get; private set; }
 
+
+        public string audioName { get; private set; }
+        public string songName { get; private set; }
         public NoteSkinData noteSkinData { get; set; }
 
         public List<Note> notes = new List<Note>();
@@ -29,9 +30,6 @@ namespace random_game
         public List<Receptor> receptors = new List<Receptor>();
 
         public LuaScript script;
-
-        public float songOffset = 0;
-
         public GameData(string songName, string audioName)
         {
             this.songName = songName;

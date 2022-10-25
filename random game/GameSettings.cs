@@ -64,6 +64,11 @@ namespace random_game
                 noteSkin = saveDataJson.noteSkin;
             }
 
+            loadKeybinds();
+        }
+
+        public static void loadKeybinds()
+        {
             string keyBindPath = System.IO.Directory.GetCurrentDirectory() + "/keyBinds.txt";
             if (!File.Exists(keyBindPath))
             {
@@ -78,19 +83,39 @@ namespace random_game
                     string s = sr.ReadToEnd();
                     keybindsStr += s;
                 }
-                string[] bindsArrayStr = keybindsStr.Split(';');
+                string[] bindsArrayStr = keybindsStr.Trim().Split(';');
                 int keyCount = 1;
                 foreach (string keyCountStr in bindsArrayStr)
                 {
-                    keyCount++;
-                    string[] keysStr = keyCountStr.Split(':');
-                    for (int i = 0; i < keysStr.Length; i++)
+                    if (keyCountStr != "") //should fix errors
                     {
-                        Key key = (Key)Enum.Parse(typeof(Key), keysStr[i]);
-                    
+                        keyBinds.Add(new List<Key>());
+                        string[] keysStr = keyCountStr.Split(':');
+                        //Constants.errorPopup(keyCountStr);
+                        for (int i = 0; i < keysStr.Length; i++)
+                        {
+                            Key key = (Key)Enum.Parse(typeof(Key), keysStr[i]);
+
+                            keyBinds[keyCount - 1].Add(key);
+                        }
+                        keyCount++;
                     }
                 }
-
+            }
+            else //backup
+            {
+                keyBinds = new List<List<Key>>{
+                    new Key[] { Key.Space }.ToList(),
+                    new Key[] { Key.D, Key.K }.ToList(),
+                    new Key[] { Key.D, Key.Space, Key.K }.ToList(),
+                    new Key[] { Key.D, Key.F, Key.J, Key.K }.ToList(),
+                    new Key[] { Key.D, Key.F, Key.Space, Key.J, Key.K }.ToList(),
+                    new Key[] { Key.S, Key.D, Key.F, Key.J, Key.K, Key.L }.ToList(),
+                    new Key[] { Key.S, Key.D, Key.F, Key.Space, Key.J, Key.K, Key.L }.ToList(),
+                    new Key[] { Key.A, Key.S, Key.D, Key.F, Key.H, Key.J, Key.K, Key.L }.ToList(),
+                    new Key[] { Key.A, Key.S, Key.D, Key.F, Key.Space, Key.H, Key.J, Key.K, Key.L }.ToList()
+                };
+                saveKeybinds(true);
             }
         }
 
@@ -105,6 +130,30 @@ namespace random_game
             saveDataJson.noteSkin = noteSkin;
             string jsonString = JsonConvert.SerializeObject(saveDataJson);
             File.WriteAllText(path, jsonString);
+        }
+
+        public static void saveKeybinds(bool saveDefaultBinds = false)
+        {
+            string path = System.IO.Directory.GetCurrentDirectory() + "/keyBinds.txt";
+            string keybindStr = "";
+            for (int i = 0; i < keyBinds.Count; i++)
+            {
+                for (int j = 0; j < keyBinds[i].Count; j++)
+                {
+                    string keyStr = keyBinds[i][j].ToString();
+                    keybindStr += keyStr;
+                    if (j < keyBinds[i].Count-1)
+                        keybindStr += ":";
+                }
+                keybindStr += ";\n";
+            }
+
+            
+            File.WriteAllText(path, keybindStr);
+            if (saveDefaultBinds) //in case it doesnt exist
+            {
+                File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + "/defaultBinds.txt", keybindStr);
+            }
         }
     }
 }

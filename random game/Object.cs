@@ -13,15 +13,14 @@ namespace random_game
 
         public float x { get; set; }
         public float y { get; set; }
-
         public float offsetX { get; set; }
         public float offsetY { get; set; }
-        public string text { get; set; }
 
         public bool doDraw = true;
-
         public ConsoleColor BGColor = 0; //black
-        public ConsoleColor FGColor = ConsoleColor.Gray; 
+        public ConsoleColor FGColor = ConsoleColor.Gray;
+
+        public string text { get; set; }
 
         protected GameData _gameData;
         public Object(float x, float y, GameData _gameData)
@@ -62,7 +61,7 @@ namespace random_game
                 if (roundedY >= 0 && roundedY < Constants.BUFFERHEIGHT) //if within bounds
                 {
                     int drawOffset = 0; //for empty spaces
-                    while (lines[i][0] == ' ')
+                    while (lines[i] != "" && lines[i][0] == ' ')
                     {
                         lines[i] = lines[i].Remove(0, 1);
                         drawOffset++;

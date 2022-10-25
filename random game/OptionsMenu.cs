@@ -145,6 +145,9 @@ namespace random_game
                     changeRoom(new MainMenu());
                     break;
 
+                case "Key Binds":
+                    changeRoom(new KeybindMenu());
+                    break;
                 default:
 
                     break;

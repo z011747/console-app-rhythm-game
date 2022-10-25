@@ -21,13 +21,7 @@ namespace random_game
             //startDrawThread();
             DateTime _previousGameTime = DateTime.Now;
 
-            if (drawThread != null)
-            {
-                drawThread.Abort();
-            }
-            drawThread = new Thread(drawingOnThread);
-            drawThread.Start();
-
+            resetDrawThread();
             while (running)
             {
                 //update loop
@@ -41,6 +35,15 @@ namespace random_game
 
                 Thread.Sleep(1);
             }
+        }
+        public void resetDrawThread()
+        {
+            if (drawThread != null)
+            {
+                drawThread.Abort();
+            }
+            drawThread = new Thread(drawingOnThread);
+            drawThread.Start();
         }
         public void drawingOnThread()
         {
