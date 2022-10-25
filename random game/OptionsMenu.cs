@@ -9,6 +9,7 @@ namespace random_game
     class OptionsMenu : BaseSelectionMenu
     {
         Object _text;
+        Object _infoText;
 
         List<Receptor> receptors = new List<Receptor>();
         Object note;
@@ -24,6 +25,11 @@ namespace random_game
             _text.text += "\nOptions";
             _text.text += "\n----------------------------------------------------";
 
+            _infoText = new Object(30, 4, null);
+            _infoText.text = "asdasd";
+
+
+
 
             optionList.Add("Scroll Speed");
             optionList.Add("Scroll Direction");
@@ -32,7 +38,9 @@ namespace random_game
             optionList.Add("Key Binds");
             optionList.Add("Go Back");
 
+            
             setupMenu();
+            objects.Add(_infoText);
             objects.Add(_text);
             _gameData = new GameData("", "");
             _gameData.noteSkinData = new NoteSkinData(_gameData, GameSettings.noteSkin);
@@ -122,6 +130,27 @@ namespace random_game
                 {
                     obj.text += " <-----";
                     obj.x = 5;
+                    switch (optionList[i]) //info text
+                    {
+                        case "Scroll Speed":
+                            _infoText.text = "Changes how fast notes move towards the strumline.";
+                            break;
+                        case "Scroll Direction":
+                            _infoText.text = "Changes the direction that notes move.";
+                            break;
+                        case "Auto Play":
+                            _infoText.text = "Enabling means the game plays itself.";
+                            break;
+                        case "Note Quants":
+                            _infoText.text = "Enabling means notes get colored based on their beat.";
+                            break;
+                        case "Key Binds":
+                            _infoText.text = "Change Controls here.";
+                            break;
+                        default:
+                            _infoText.text = "";
+                            break;
+                    }
                 }
 
                 if (selectedOption + 10 > Constants.BUFFERHEIGHT)

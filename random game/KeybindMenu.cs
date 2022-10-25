@@ -104,6 +104,7 @@ namespace random_game
                     break;
                 default:
                     waitingForInput = true;
+                    options[selection].text = "?";
                     break;
             }
         }
