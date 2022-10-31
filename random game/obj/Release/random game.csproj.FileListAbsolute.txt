@@ -15,3 +15,5 @@ C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\New
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\NLua.dll
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\KeraLua.xml
 C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\Newtonsoft.Json.xml
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\bin\Release\Betwixt.dll
+C:\Users\MZoro\OneDrive\Documents\GitHub\random-game\random game\obj\Release\random game.csproj.CopyComplete

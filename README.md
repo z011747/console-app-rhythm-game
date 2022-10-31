@@ -2,15 +2,15 @@
 A game made in just over a week that I made to learn C#. <br />
 Its just a simple 4-9k rhythm game where you hit notes in time with a song, <br />
 but its made entirely inside of console app, and uses text for its sprites/graphics. <br />
-
+![](https://github.com/z011747/console-app-rhythm-game/tree/master/readme/gameplay.gif)
  <br />
 It supports custom songs and loading file formats from a couple different rhythm games (FNF .json charts and StepMania .sm files). <br />
 The game also has its own file format for charts but has no editor for it to be easily useable. <br />
-
+![](https://github.com/z011747/console-app-rhythm-game/tree/master/readme/options.png)
 <br />
 There are multiple options that can be changed in the menu, such as the scroll speed of notes and the scroll direction. <br />
 The game also supports custom noteskins that can be setup with different colors and sprites (using text in txt files). <br />
-
+![](https://github.com/z011747/console-app-rhythm-game/tree/master/readme/noteskins.png)
 ## Development of the game
 I first had the idea of creating a simple game in console app while talking with a friend, <br />
 and decided it would be a good way to start learning C# for my University Course as I was starting a Networking unit that uses C# and .NET. <br />

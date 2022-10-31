@@ -37,7 +37,7 @@ namespace random_game
         private bool failedSong = false;
         public bool paused = false;
 
-        public static Game instance; //i know these arent great but i need it for lua
+        public static Game instance; //needed for lua
 
         private string chartName;
 

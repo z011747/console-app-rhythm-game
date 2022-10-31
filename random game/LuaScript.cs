@@ -254,7 +254,10 @@ namespace random_game
         static public void tweenReceptorY(int i, float pos, float time, string ease)
         {
             Object receptor = Game.instance._gameData.receptors[i];
-            //Game.instance._gameData.script.tweenManager.Tween(receptor, new { y = pos }, time).Ease(getEaseFromString(ease));
+            Tweener<float> tween = new Tweener<float>(receptor.y, pos, time, Ease.Cubic.InOut);
+            PropertyInfo prop = receptor.GetType().GetProperty("y");
+            LuaTween luaTween = new LuaTween(tween, prop, receptor);
+            Game.instance._gameData.script.tweens.Add(luaTween);
         }
 
 
