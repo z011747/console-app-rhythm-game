@@ -33,3 +33,12 @@ There were even some extra features I added such as Lua scripting (using a libra
 and do things like moving arrows, moving the screen, etc. <br /> 
 <br /> 
 Overall, this game was pretty fun to work on and has helped me learn and get used to working with C#.
+<br /> 
+<br /> 
+If I were to continue working on this I would: 
+- fix current bugs (input still being detected when unfocused etc)
+- expand lua script support
+- add default songs/sound effects
+- more built-in noteskins
+- save scores to a file
+- and other quality of life features
