@@ -24,12 +24,12 @@ There were other issues with drawing such as making multiline text objects match
 Once I had the main framework with text objects setup I could start actually making the game, <br />
 I first made the game display notes moving with a time variable that was increasing with deltatime, <br /> 
 and a basic chart format/loader and a converter so I could test it. <br /> 
-After that i added things like long note rendering (did by seeing how far away the end of the long note was and looping a draw for each space in between), <br />
+After that i added things like long note rendering (did by seeing how far away the end of the long note was and looping a draw for each space in between), 
 and implementing an input system and being able to hit notes, the input needed to only detect the first press and ignore it being held, and adding the audio obviously. <br />
 <br />
 At this point that the game was technically playable and was just lacking extra features, <br /> 
 which were added over the next few days, things like the HUD, Color on the notes, custom song support, menus, etc. <br />
-There were even some extra features I added such as Lua scripting (using a library for) which means you could make modcharts for songs, <br /> 
+There were even some extra features I added such as Lua scripting (using a library for) which means you could make modcharts for songs,
 and do things like moving arrows, moving the screen, etc. <br /> 
 <br /> 
 Overall, this game was pretty fun to work on and has helped me learn and get used to working with C#.
@@ -41,4 +41,5 @@ If I were to continue working on this I would:
 - add default songs/sound effects
 - more built-in noteskins
 - save scores to a file
+- built-in chart editor
 - and other quality of life features
