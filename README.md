@@ -4,7 +4,7 @@ Its just a simple 4-9k rhythm game where you hit notes in time with a song, <br 
 but its made entirely inside of console app, and uses text for its sprites/graphics. <br />
 ![](https://github.com/z011747/console-app-rhythm-game/blob/master/readme/gameplay.gif)
  <br />
-It supports custom songs and loading file formats from a couple different rhythm games (FNF .json charts and StepMania .sm files). <br />
+It supports custom songs and loading file formats from a couple different rhythm games (FNF .json charts (pre 0.3) and StepMania .sm files). <br />
 The game also has its own file format for charts but has no editor for it to be easily useable. <br />
 ![](https://github.com/z011747/console-app-rhythm-game/blob/master/readme/options.png)
 <br />
@@ -35,11 +35,3 @@ and do things like moving arrows, moving the screen, etc. <br />
 Overall, this game was pretty fun to work on and has helped me learn and get used to working with C#.
 <br /> 
 <br /> 
-If I were to continue working on this I would: 
-- fix current bugs (input still being detected when unfocused etc)
-- expand lua script support
-- add default songs/sound effects
-- more built-in noteskins
-- save scores to a file
-- built-in chart editor
-- and other quality of life features
